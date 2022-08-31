@@ -7,3 +7,8 @@ data class PersonaListResponse(
     @Expose @SerializedName("status") val status: String,
     @Expose @SerializedName("respuesta") val respuesta: MutableList<Persona>
 )
+
+data class PersonaSaveResponse(
+    @Expose @SerializedName("status") val status: String,
+    @Expose @SerializedName("respuesta") val respuesta: Persona
+)

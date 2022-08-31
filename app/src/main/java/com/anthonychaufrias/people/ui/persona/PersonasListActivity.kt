@@ -25,6 +25,15 @@ class PersonasListActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(PersonaVM::class.java)
         initUI()
         //test()
+        fab.setOnClickListener { view ->
+            /*Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+                .setAction("Action", null)
+                .show()*/
+            var  objPer: Persona? = null
+            val intent = Intent(this, PersonaSaveActivity::class.java)
+            intent.putExtra(PersonaSaveActivity.ARG_ITEM, objPer)
+            startActivity(intent)
+        }
     }
     private fun initUI(){
         getPersonas()
@@ -34,7 +43,9 @@ class PersonasListActivity : AppCompatActivity() {
         try{
             rvPersonas.layoutManager = LinearLayoutManager(this)
             rvPersonas.adapter = PersListAdapter{
-
+                val intent = Intent(this, PersonaSaveActivity::class.java)
+                intent.putExtra(PersonaSaveActivity.ARG_ITEM, it)
+                startActivity(intent)
             }
             viewModel.getPersonasList()
             viewModel.lstPersonas.observe(this, Observer { list ->
