@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">People</string>
+    <string name="app_name">Personas</string>
+    <string name="tlt_lpers">Personas</string>
+    <string name="tlt_nper">Nueva persona</string>
+    <string name="tlt_eper">Editar persona</string>
+
+    <string name="lblNombres">Nombres</string>
+    <string name="lblDocumento">Documento</string>
+    <string name="lblPais">País</string>
+    <string name="lblCbPais">Selecciona tu país</string>
+    <string name="lblbtnGuardar">Guardar</string>
+
+    <!-- messages -->
+    <string name="msgSuccess_Pers">La persona se creó satisfactoriamente</string>
+    <string name="msgFailure">Hubo inconvenientes al guardar los datos. Inténtelo nuevamente</string>
+
 </resources>
