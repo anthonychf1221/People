@@ -8,5 +8,6 @@ data class Persona(
     @Expose @SerializedName("idp") val idp: Int,
     @Expose @SerializedName("nombres") val nombres: String,
     @Expose @SerializedName("documento") val documento: String,
-    @Expose @SerializedName("idpais") val idpais: Int?): Serializable
+    @Expose @SerializedName("idpais") val idpais: Int?,
+    @Expose @SerializedName("nombpais") val nombpais: String?): Serializable
 

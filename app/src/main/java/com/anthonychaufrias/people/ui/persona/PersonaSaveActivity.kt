@@ -59,8 +59,9 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             val nombre: String = txtNombre.text.toString().trim()
             val docID: String = txtDocumento.text.toString().trim()
             val idPais: Int? = viewModelPais.lstPaises.value?.get(selPosPais)?.idpais
+            val nbPais: String? = viewModelPais.lstPaises.value?.get(selPosPais)?.nombre
 
-            viewModelPers.addPersona(Persona(0, nombre, docID, idPais))
+            viewModelPers.addPersona(Persona(0, nombre, docID, idPais, nbPais))
             viewModelPers.savePersona.observe(this, Observer { persona ->
                 if( persona != null ){
                     Snackbar.make(view, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG)

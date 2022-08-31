@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.model.Persona
+import kotlinx.android.synthetic.main.row_persona.view.*
 //import com.example.myapplication.model.PersonaResult
-import kotlinx.android.synthetic.main.row_persona.view.txtNombre
 
 class PersListAdapter(val fnPersClick: (Persona) -> Unit): RecyclerView.Adapter<PersListAdapter.SearchViewHolder>() {
-    var personasList: List<Persona> = emptyList<Persona>()
+    var personasList: List<Persona> = emptyList()
     fun setData(list: List<Persona>){
         personasList = list
         notifyDataSetChanged()
@@ -23,6 +23,7 @@ class PersListAdapter(val fnPersClick: (Persona) -> Unit): RecyclerView.Adapter<
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
         var obj = personasList[position]
         holder.itemView.txtNombre.text = obj.nombres
+        holder.itemView.txtPais.text = obj.nombpais
         holder.itemView.setOnClickListener { fnPersClick(obj) }
     }
 
