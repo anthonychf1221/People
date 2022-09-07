@@ -26,12 +26,9 @@ class PersonasListActivity : AppCompatActivity() {
         initUI()
         //test()
         fab.setOnClickListener { view ->
-            /*Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .show()*/
-            var  objPer: Persona? = null
+            //var  objPer: Persona? = null
             val intent = Intent(this, PersonaSaveActivity::class.java)
-            intent.putExtra(PersonaSaveActivity.ARG_ITEM, objPer)
+            intent.putExtra(PersonaSaveActivity.ARG_ITEM, Persona(0, "", "", 0, ""))
             startActivity(intent)
         }
     }
@@ -42,11 +39,13 @@ class PersonasListActivity : AppCompatActivity() {
     private fun getPersonas(){
         try{
             rvPersonas.layoutManager = LinearLayoutManager(this)
-            rvPersonas.adapter = PersListAdapter{
-                val intent = Intent(this, PersonaSaveActivity::class.java)
-                intent.putExtra(PersonaSaveActivity.ARG_ITEM, it)
-                startActivity(intent)
-            }
+            rvPersonas.adapter = PersListAdapter({
+                    val intent = Intent(this, PersonaSaveActivity::class.java)
+                    intent.putExtra(PersonaSaveActivity.ARG_ITEM, it)
+                    startActivity(intent)
+                },{
+                    deletePersona(it)
+                })
             viewModel.getPersonasList()
             viewModel.lstPersonas.observe(this, Observer { list ->
                 Log.e("cammbiossss==", "cammbiosssscammbiossss");
@@ -56,6 +55,11 @@ class PersonasListActivity : AppCompatActivity() {
         catch (e: Exception) {
             Log.e("initUI-Exception==", e.message.toString());
         }
+    }
+
+    private fun deletePersona(persona: Persona){
+        Log.e("Eliminar persona===", ""+persona.idp)
+        viewModel.deletePersona(persona)
     }
 
     /*private fun test(){

@@ -9,7 +9,7 @@ import com.anthonychaufrias.people.model.Persona
 import kotlinx.android.synthetic.main.row_persona.view.*
 //import com.example.myapplication.model.PersonaResult
 
-class PersListAdapter(val fnPersClick: (Persona) -> Unit): RecyclerView.Adapter<PersListAdapter.SearchViewHolder>() {
+class PersListAdapter(val fnPersClick: (Persona) -> Unit, val fnDelPerClick: (Persona) -> Unit): RecyclerView.Adapter<PersListAdapter.SearchViewHolder>() {
     var personasList: List<Persona> = emptyList()
     fun setData(list: List<Persona>){
         personasList = list
@@ -25,6 +25,7 @@ class PersListAdapter(val fnPersClick: (Persona) -> Unit): RecyclerView.Adapter<
         holder.itemView.txtNombre.text = obj.nombres
         holder.itemView.txtPais.text = obj.nombpais
         holder.itemView.setOnClickListener { fnPersClick(obj) }
+        holder.itemView.imgDelete.setOnClickListener { fnDelPerClick(obj) }
     }
 
     override fun getItemCount(): Int {

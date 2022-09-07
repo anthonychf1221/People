@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class Persona(
-    @Expose @SerializedName("idp") val idp: Int,
-    @Expose @SerializedName("nombres") val nombres: String,
-    @Expose @SerializedName("documento") val documento: String,
-    @Expose @SerializedName("idpais") val idpais: Int?,
-    @Expose @SerializedName("nombpais") val nombpais: String?): Serializable
+    @Expose @SerializedName("idp") var idp: Int,
+    @Expose @SerializedName("nombres") var nombres: String,
+    @Expose @SerializedName("documento") var documento: String,
+    @Expose @SerializedName("idpais") var idpais: Int?,
+    @Expose @SerializedName("nombpais") var nombpais: String?): Serializable
 

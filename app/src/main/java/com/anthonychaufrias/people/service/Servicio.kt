@@ -37,4 +37,24 @@ interface Servicio {
         @Body persona: Persona
     ): Call<PersonaSaveResponse>
 
+
+    @Headers(
+        "Accept: application/json",
+        "Content-Type: application/json"
+    )
+    @POST("modificarpersona")
+    fun updatePersona(
+        @Body persona: Persona
+    ): Call<PersonaSaveResponse>
+
+
+    @Headers(
+        "Accept: application/json",
+        "Content-Type: application/json"
+    )
+    @POST("eliminarpersona")
+    fun deletePersona(
+        @Body persona: Persona
+    ): Call<PersonaSaveResponse>
+
 }

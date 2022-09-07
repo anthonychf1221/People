@@ -21,8 +21,8 @@ class PersonaVM : ViewModel(){
         .build()
     private val service: Servicio = retrofit.create(Servicio::class.java)
 
-    val lstPersonas = MutableLiveData<MutableList<Persona>>()
-    val savePersona = MutableLiveData<Persona>()
+    var lstPersonas = MutableLiveData<MutableList<Persona>>()
+    var savePersona = MutableLiveData<Persona>()
     /*init {
         lstPersonas.value = ArrayList()
     }*/
@@ -65,6 +65,57 @@ class PersonaVM : ViewModel(){
             override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                 call.cancel()
                 savePersona.postValue(null)
+            }
+        })
+    }
+
+    fun updatePersona(persona: Persona){
+        val call = service.updatePersona(persona)
+        call.enqueue(object : Callback<PersonaSaveResponse>{
+            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
+                Log.e("status", "statusstatus == "+response.body()?.toString())
+                if( response.body()?.status.equals("Ok") ){
+                    Log.e("onResponse", "ififififif == ")
+                    response.body()?.respuesta?.let { persona ->
+                        savePersona.postValue(persona)
+
+                        /*var lista : MutableList<Persona>  = mutableListOf()
+                        lista.add(persona)
+                        lstPersonas.postValue(lista)*/
+                    }
+                }
+                else{
+                    savePersona.postValue(null)
+                }
+            }
+            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
+                call.cancel()
+                savePersona.postValue(null)
+            }
+        })
+    }
+
+    fun deletePersona(persona: Persona){
+        val call = service.deletePersona(persona)
+        call.enqueue(object : Callback<PersonaSaveResponse>{
+            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
+                Log.e("status", "statusstatus == "+response.body()?.toString())
+                if( response.body()?.status.equals("Ok") ){
+                    Log.e("onResponse", "ififififif == ")
+                    response.body()?.respuesta?.let { persona ->
+                        lstPersonas = MutableLiveData<MutableList<Persona>>()
+                        val lst = mutableListOf<Persona>()
+                        lst.add(persona)
+                        lstPersonas.postValue(lst)
+                    }
+                }
+                else{
+                    //savePersona.postValue(null)
+                }
+            }
+            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
+                call.cancel()
+                //savePersona.postValue(null)
             }
         })
     }

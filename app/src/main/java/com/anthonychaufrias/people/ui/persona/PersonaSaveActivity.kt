@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.lyt_sav_persona.*
 class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var viewModelPais: PaisVM
     private lateinit var viewModelPers: PersonaVM
-    private var objPer: Persona? = null
+    private lateinit var objPer: Persona
     private var selPosPais: Int = 0
     companion object {
         @JvmStatic val ARG_ITEM: String = "objPer"
@@ -30,15 +30,16 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
         var tlt:String = ""
         // https://stackoverflow.com/questions/37949024/kotlin-typecastexception-null-cannot-be-cast-to-non-null-type-com-midsizemango
-        objPer = intent.getSerializableExtra(ARG_ITEM) as? Persona
-        if( objPer == null ){
+        // objPer = intent.getSerializableExtra(ARG_ITEM) as? Persona
+        objPer = intent.getSerializableExtra(ARG_ITEM) as Persona
+        if( objPer.idp == 0 ){
             tlt = getString(R.string.tlt_nper)
         }
         else{
             tlt = getString(R.string.tlt_eper)
             //Log.e("00000000 ", ""+objPer?.nombres)
-            txtNombre.setText(objPer?.nombres)
-            txtDocumento.setText(objPer?.documento)
+            txtNombre.setText(objPer.nombres)
+            txtDocumento.setText(objPer.documento)
         }
         this.supportActionBar!!.setTitle(tlt)
 
@@ -48,7 +49,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
 
     private fun initUI(){
-        getPaises()
+        getPaises(objPer.idpais)
         btnSave.setOnClickListener { view ->
             saveData(view)
         }
@@ -61,34 +62,71 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             val idPais: Int? = viewModelPais.lstPaises.value?.get(selPosPais)?.idpais
             val nbPais: String? = viewModelPais.lstPaises.value?.get(selPosPais)?.nombre
 
-            viewModelPers.addPersona(Persona(0, nombre, docID, idPais, nbPais))
+            if( !checkForm(nombre, docID) ){
+                return;
+            }
+
+            objPer.nombres = nombre
+            objPer.documento = docID
+            objPer.idpais = idPais
+            objPer.nombpais = nbPais
+            if( objPer.idp == 0 ){
+                //viewModelPers.addPersona(Persona(0, nombre, docID, idPais, nbPais))
+                viewModelPers.addPersona(objPer)
+            }
+            else{
+                viewModelPers.updatePersona(objPer)
+            }
+
             viewModelPers.savePersona.observe(this, Observer { persona ->
-                if( persona != null ){
-                    Snackbar.make(view, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show()
+                if (persona != null) {
+                    Snackbar.make(
+                        view,
+                        getString(R.string.msgSuccess_Pers),
+                        Snackbar.LENGTH_LONG )
+                    .setAction("Action", null)
+                    .show()
                     finish()
-                }
-                else{
+                } else {
                     Snackbar.make(view, getString(R.string.msgFailure), Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .show()
                 }
             })
+
         }
         catch(e: Exception){
 
         }
     }
 
-    private fun getPaises(){
+    private fun checkForm(nombre: String, docID: String):Boolean {
+        var x:Boolean = true
+        if( nombre.equals("") ){
+            txtNombre.setError("Este campo es obligatorio")
+            x = false
+        }
+        if( docID.equals("") ){
+            txtDocumento.setError("Este campo es obligatorio")
+            x = false
+        }
+        return x
+    }
+
+    private fun getPaises(selectedId:Int? = 0){
         try{
             viewModelPais.getPaisesList()
             viewModelPais.lstPaises.observe(this, Observer { list ->
                 var lstStrPais: MutableList<String> = mutableListOf()
+                var idx:Int = 0
+                var i:Int = 0
                 // https://www.programiz.com/kotlin-programming/for-loop
                 for(pais in list){
                     lstStrPais.add(pais.nombre)
+                    if( pais.idpais == selectedId ){
+                        idx = i
+                    }
+                    i++
                 }
                 //var languages = arrayOf("Java", "PHP", "Kotlin", "Javascript", "Python", "Swift")
                 var aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, lstStrPais)
@@ -96,7 +134,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
                 with(spPais){
                     adapter = aa
-                    setSelection(0, false)
+                    setSelection(idx, false)
                     onItemSelectedListener = this@PersonaSaveActivity
                     prompt = getString(R.string.lblCbPais)
                     gravity = Gravity.CENTER

@@ -11,7 +11,7 @@
     <string name="lblbtnGuardar">Guardar</string>
 
     <!-- messages -->
-    <string name="msgSuccess_Pers">La persona se creó satisfactoriamente</string>
+    <string name="msgSuccess_Pers">Se guardaron los datos satisfactoriamente</string>
     <string name="msgFailure">Hubo inconvenientes al guardar los datos. Inténtelo nuevamente</string>
 
 </resources>
