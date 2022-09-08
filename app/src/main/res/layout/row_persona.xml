@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/textColorPrimary"
-                android:text="uhiuhh"
+                android:text=""
                 android:textSize="@dimen/primaryTextSize"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/textColorSecondary"
-                android:text="popop"
+                android:text=""
                 android:textSize="@dimen/secondaryTextSize"
                 android:layout_marginTop="@dimen/marginTopBtwElems"
                 app:layout_constraintStart_toStartOf="parent"
@@ -51,13 +51,13 @@
                 android:id="@+id/imgDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/dimen_4dp"
                 android:src="@drawable/baseline_delete_white_36"
                 app:layout_constraintStart_toEndOf="@+id/txtNombre"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/black" />
+                app:tint="@color/red" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

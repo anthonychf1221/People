@@ -9,7 +9,23 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPersonas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/lblNoRecords"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/msgNoRecords"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="@dimen/primaryTextSize"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -17,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:src="@drawable/baseline_add_white_24"
-        android:contentDescription="mas"
+        android:contentDescription="@string/lblAddPers"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="@dimen/body_margin" />

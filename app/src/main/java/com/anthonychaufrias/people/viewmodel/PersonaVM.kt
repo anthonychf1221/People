@@ -120,8 +120,9 @@ class PersonaVM : ViewModel(){
         })
     }
 
-    fun getPersonasList(){
-        val call = service.getPersonaList()
+    fun getPersonasList(busqueda: String){
+        Log.e("====mvvm==", ""+busqueda)
+        val call = service.getPersonaList(busqueda)
         call.enqueue(object : Callback<PersonaListResponse>{
             override fun onResponse(call: Call<PersonaListResponse>,response: Response<PersonaListResponse>) {
                 response.body()?.respuesta?.let { list ->

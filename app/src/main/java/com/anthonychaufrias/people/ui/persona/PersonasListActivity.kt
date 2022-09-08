@@ -1,9 +1,14 @@
 package com.anthonychaufrias.people.ui.persona
 
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +26,7 @@ class PersonasListActivity : AppCompatActivity() {
 
         val tlt: String = getString(R.string.tlt_lpers)
         this.supportActionBar!!.setTitle(tlt)
+        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         viewModel = ViewModelProvider(this).get(PersonaVM::class.java)
         initUI()
@@ -33,23 +39,28 @@ class PersonasListActivity : AppCompatActivity() {
         }
     }
     private fun initUI(){
-        getPersonas()
+        rvPersonas.layoutManager = LinearLayoutManager(this)
+        rvPersonas.adapter = PersListAdapter({
+            val intent = Intent(this, PersonaSaveActivity::class.java)
+            intent.putExtra(PersonaSaveActivity.ARG_ITEM, it)
+            startActivity(intent)
+        },{
+            deletePersona(it)
+        })
+        getPersonas("")
     }
 
-    private fun getPersonas(){
+    private fun getPersonas(busqueda: String){
         try{
-            rvPersonas.layoutManager = LinearLayoutManager(this)
-            rvPersonas.adapter = PersListAdapter({
-                    val intent = Intent(this, PersonaSaveActivity::class.java)
-                    intent.putExtra(PersonaSaveActivity.ARG_ITEM, it)
-                    startActivity(intent)
-                },{
-                    deletePersona(it)
-                })
-            viewModel.getPersonasList()
+            viewModel.getPersonasList(busqueda)
             viewModel.lstPersonas.observe(this, Observer { list ->
-                Log.e("cammbiossss==", "cammbiosssscammbiossss");
+                // Log.e("cammbiossss==", "cammbiosssscammbiossss::: ")
                 (rvPersonas.adapter as PersListAdapter).setData(list)
+                var vis = View.GONE
+                if( list.size == 0 ){
+                    vis = View.VISIBLE
+                }
+                lblNoRecords.visibility = vis
             })
         }
         catch (e: Exception) {
@@ -58,8 +69,50 @@ class PersonasListActivity : AppCompatActivity() {
     }
 
     private fun deletePersona(persona: Persona){
-        Log.e("Eliminar persona===", ""+persona.idp)
-        viewModel.deletePersona(persona)
+        //Log.e("Eliminar persona===", ""+persona.idp)
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.tlt_lpers))
+        builder.setMessage(getString(R.string.msgAreYouSureDel))
+
+        builder.setPositiveButton(R.string.ansYes) { dialog, which ->
+            viewModel.deletePersona(persona)
+        }
+        builder.setNegativeButton(R.string.ansNo) { dialog, which ->
+
+        }
+        /*builder.setNeutralButton("Maybe") { dialog, which ->
+            Toast.makeText(applicationContext,
+                "Maybe", Toast.LENGTH_SHORT).show()
+        }*/
+        builder.show()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        val searchItem = menu.findItem(R.id.mn_search)
+        if( searchItem != null ){
+            val searchView = searchItem.actionView as SearchView
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    Log.e("====onQueryTextSubmit", ""+query)
+                    getPersonas(query)
+                    return true
+                }
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    if( newText!!.isEmpty() ){
+                        Log.e("onQueryTextChange", ""+newText)
+                        getPersonas("")
+                    }
+                    return true
+                }
+            })
+        }
+        return super.onCreateOptionsMenu(menu)
     }
 
     /*private fun test(){

@@ -42,6 +42,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             txtDocumento.setText(objPer.documento)
         }
         this.supportActionBar!!.setTitle(tlt)
+        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         viewModelPais = ViewModelProvider(this).get(PaisVM::class.java)
         viewModelPers = ViewModelProvider(this).get(PersonaVM::class.java)
@@ -153,6 +154,11 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
 }

@@ -26,7 +26,7 @@
             android:paddingEnd="@dimen/dimen_10dp">
             <EditText
                 android:id="@+id/txtNombre"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/lblNombres"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -35,7 +35,7 @@
                 app:layout_constraintVertical_bias="0.15" />
             <EditText
                 android:id="@+id/txtDocumento"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/lblDocumento"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -45,7 +45,7 @@
                 app:layout_constraintVertical_bias="0.05" />
             <Spinner
                 android:id="@+id/spPais"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:spinnerMode="dialog"
                 app:layout_constraintBottom_toBottomOf="parent"
