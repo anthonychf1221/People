@@ -1,6 +1,8 @@
 package com.anthonychaufrias.people.viewmodel
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.anthonychaufrias.people.config.Constantes
@@ -13,6 +15,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.function.Predicate
 
 class PersonaVM : ViewModel(){
     private val retrofit = Retrofit.Builder()
@@ -21,25 +24,22 @@ class PersonaVM : ViewModel(){
         .build()
     private val service: Servicio = retrofit.create(Servicio::class.java)
 
-    var lstPersonas = MutableLiveData<MutableList<Persona>>()
-    var savePersona = MutableLiveData<Persona>()
+    var ldLstPersonas = MutableLiveData<MutableList<Persona>>()
+    var listPersonas  = mutableListOf<Persona>()
+    var ldSavePersona = MutableLiveData<Persona>()
     /*init {
         lstPersonas.value = ArrayList()
     }*/
 
     fun addPersona(persona: Persona){
-        //fun addPersona(nomb: String, doc: String, idps: Int?){
-        //val call = service.addPersona(nomb, doc, idps)
         val call = service.addPersona(persona)
         call.enqueue(object : Callback<PersonaSaveResponse>{
             override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                Log.e("status", "statusstatus == "+response.body()?.toString())
                 if( response.body()?.status.equals("Ok") ){
-                    Log.e("onResponse", "ififififif == ")
-                    // satisfactoria
+                    //Log.e("ffffff===nuevooo====", "++"+listPersonas.size)
                     //https://stackoverflow.com/questions/47941537/notify-observer-when-item-is-added-to-list-of-livedata/49022687#49022687
                     response.body()?.respuesta?.let { persona ->
-                        savePersona.postValue(persona)
+                        ldSavePersona.postValue(persona)
 
                         /*val lst = mutableListOf<Persona>()
                         //lst.addAll(lstPersonas.value)
@@ -51,20 +51,18 @@ class PersonaVM : ViewModel(){
                         //lstPersonas.postValue(lstPersonas.value)
                         //lstPersonas.value = lstPersonas.value // notify observers
 
-                        //Log.e("ultimoooo", "nuevoo-lis == "+lstPersonas.value?.last().toString())
                         var lista : MutableList<Persona>  = mutableListOf()
                         lista.add(persona)
-                        lstPersonas.postValue(lista)
-                        //Log.e("ultimoooo", "nuevoo-lis == "+lstPersonas.value?.last().toString())
+                        ldLstPersonas.postValue(lista)
                     }
                 }
                 else{
-                    savePersona.postValue(null)
+                    ldSavePersona.postValue(null)
                 }
             }
             override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                 call.cancel()
-                savePersona.postValue(null)
+                ldSavePersona.postValue(null)
             }
         })
     }
@@ -73,11 +71,9 @@ class PersonaVM : ViewModel(){
         val call = service.updatePersona(persona)
         call.enqueue(object : Callback<PersonaSaveResponse>{
             override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                Log.e("status", "statusstatus == "+response.body()?.toString())
                 if( response.body()?.status.equals("Ok") ){
-                    Log.e("onResponse", "ififififif == ")
                     response.body()?.respuesta?.let { persona ->
-                        savePersona.postValue(persona)
+                        ldSavePersona.postValue(persona)
 
                         /*var lista : MutableList<Persona>  = mutableListOf()
                         lista.add(persona)
@@ -85,12 +81,12 @@ class PersonaVM : ViewModel(){
                     }
                 }
                 else{
-                    savePersona.postValue(null)
+                    ldSavePersona.postValue(null)
                 }
             }
             override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                 call.cancel()
-                savePersona.postValue(null)
+                ldSavePersona.postValue(null)
             }
         })
     }
@@ -99,34 +95,28 @@ class PersonaVM : ViewModel(){
         val call = service.deletePersona(persona)
         call.enqueue(object : Callback<PersonaSaveResponse>{
             override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                Log.e("status", "statusstatus == "+response.body()?.toString())
                 if( response.body()?.status.equals("Ok") ){
-                    Log.e("onResponse", "ififififif == ")
-                    response.body()?.respuesta?.let { persona ->
-                        lstPersonas = MutableLiveData<MutableList<Persona>>()
-                        val lst = mutableListOf<Persona>()
-                        lst.add(persona)
-                        lstPersonas.postValue(lst)
+                    response.body()?.respuesta?.let { p ->
+                        removeElement(persona)
+                        //lstPersonas.postValue(lst)
+                        ldLstPersonas.value = listPersonas
+                        //lstPersonas.value = lstPersonas.value
                     }
-                }
-                else{
-                    //savePersona.postValue(null)
                 }
             }
             override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                 call.cancel()
-                //savePersona.postValue(null)
             }
         })
     }
 
     fun getPersonasList(busqueda: String){
-        Log.e("====mvvm==", ""+busqueda)
         val call = service.getPersonaList(busqueda)
         call.enqueue(object : Callback<PersonaListResponse>{
             override fun onResponse(call: Call<PersonaListResponse>,response: Response<PersonaListResponse>) {
                 response.body()?.respuesta?.let { list ->
-                    lstPersonas.postValue(list)
+                    listPersonas.addAll(list)
+                    ldLstPersonas.postValue(list)
                 }
             }
             override fun onFailure(call: Call<PersonaListResponse>, t: Throwable) {
@@ -135,4 +125,28 @@ class PersonaVM : ViewModel(){
         })
     }
 
+    //@RequiresApi(Build.VERSION_CODES.N)
+    fun removeElement(persona: Persona){
+        try{
+            // Esta forma de eliminar es más general
+            // Más información sobre bucles aquí:
+            // https://www.programiz.com/kotlin-programming/for-loop
+            //for(p in listPersonas){
+            for (item in listPersonas.indices) {
+                if( listPersonas[item].idp == persona.idp ){
+                    listPersonas.removeAt(item)
+                }
+            }
+            // Esta porción de códig también se puede usar
+            // Pero solo funcionará correctamente si la versión del dispositivo
+            // es mayor a API LEVEL 24 (Android 7.0)
+            /*var filter = Predicate { p: Persona -> p == persona }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                listPersonas.removeIf(filter)
+            }*/
+        }
+        catch (e: Exception){
+
+        }
+    }
 }

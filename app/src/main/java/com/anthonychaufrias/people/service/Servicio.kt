@@ -27,8 +27,6 @@ interface Servicio {
         @Field("nomb") nomb: String,
         @Field("doc") doc: String,
         @Field("idps") idps: Int?
-        //): Response<Persona>
-        // ): Call<PersonaSaveResponse>
     ): Call<PersonaListResponse>
 
     @Headers(

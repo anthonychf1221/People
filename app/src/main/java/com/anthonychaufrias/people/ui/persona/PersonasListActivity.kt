@@ -1,9 +1,7 @@
 package com.anthonychaufrias.people.ui.persona
 
 import android.content.Intent
-import android.opengl.Visibility
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -53,8 +51,7 @@ class PersonasListActivity : AppCompatActivity() {
     private fun getPersonas(busqueda: String){
         try{
             viewModel.getPersonasList(busqueda)
-            viewModel.lstPersonas.observe(this, Observer { list ->
-                // Log.e("cammbiossss==", "cammbiosssscammbiossss::: ")
+            viewModel.ldLstPersonas.observe(this, Observer { list ->
                 (rvPersonas.adapter as PersListAdapter).setData(list)
                 var vis = View.GONE
                 if( list.size == 0 ){
@@ -64,12 +61,11 @@ class PersonasListActivity : AppCompatActivity() {
             })
         }
         catch (e: Exception) {
-            Log.e("initUI-Exception==", e.message.toString());
+
         }
     }
 
     private fun deletePersona(persona: Persona){
-        //Log.e("Eliminar persona===", ""+persona.idp)
         val builder = AlertDialog.Builder(this)
         builder.setTitle(getString(R.string.tlt_lpers))
         builder.setMessage(getString(R.string.msgAreYouSureDel))
@@ -99,13 +95,11 @@ class PersonasListActivity : AppCompatActivity() {
             val searchView = searchItem.actionView as SearchView
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    Log.e("====onQueryTextSubmit", ""+query)
                     getPersonas(query)
                     return true
                 }
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if( newText!!.isEmpty() ){
-                        Log.e("onQueryTextChange", ""+newText)
                         getPersonas("")
                     }
                     return true

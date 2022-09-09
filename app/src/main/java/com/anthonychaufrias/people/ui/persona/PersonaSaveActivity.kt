@@ -1,7 +1,6 @@
 package com.anthonychaufrias.people.ui.persona
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
@@ -10,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.anthonychaufrias.people.R
+import com.anthonychaufrias.people.config.Constantes
 import com.anthonychaufrias.people.model.Persona
 import com.anthonychaufrias.people.viewmodel.PaisVM
 import com.anthonychaufrias.people.viewmodel.PersonaVM
@@ -79,7 +79,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                 viewModelPers.updatePersona(objPer)
             }
 
-            viewModelPers.savePersona.observe(this, Observer { persona ->
+            viewModelPers.ldSavePersona.observe(this, Observer { persona ->
                 if (persona != null) {
                     Snackbar.make(
                         view,
@@ -104,11 +104,15 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private fun checkForm(nombre: String, docID: String):Boolean {
         var x:Boolean = true
         if( nombre.equals("") ){
-            txtNombre.setError("Este campo es obligatorio")
+            txtNombre.setError(getString(R.string.requiredField))
             x = false
         }
         if( docID.equals("") ){
-            txtDocumento.setError("Este campo es obligatorio")
+            txtDocumento.setError(getString(R.string.requiredField))
+            x = false
+        }
+        else if(docID.length != Constantes.PERS_DOCID_LEN){
+            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERS_DOCID_LEN.toString()))
             x = false
         }
         return x
@@ -143,7 +147,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             })
         }
         catch (e: Exception) {
-            Log.e("initUI-Exception==", e.message.toString());
+
         }
     }
 
