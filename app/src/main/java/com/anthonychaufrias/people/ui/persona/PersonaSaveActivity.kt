@@ -111,8 +111,8 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             txtDocumento.setError(getString(R.string.requiredField))
             x = false
         }
-        else if(docID.length != Constantes.PERS_DOCID_LEN){
-            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERS_DOCID_LEN.toString()))
+        else if(docID.length != Constantes.DOCUMENT_ID_INPUT_LENGTH){
+            txtDocumento.setError(getString(R.string.docIDLen, Constantes.DOCUMENT_ID_INPUT_LENGTH.toString()))
             x = false
         }
         return x
