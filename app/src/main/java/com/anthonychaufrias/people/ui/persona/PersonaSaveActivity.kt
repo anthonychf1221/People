@@ -95,7 +95,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
         }
         catch(e: Exception){
-
+            print(e.message)
         }
     }
 
@@ -133,7 +133,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             })
         }
         catch (e: Exception) {
-
+            print(e.message)
         }
     }
 

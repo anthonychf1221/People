@@ -131,7 +131,7 @@ class PersonaViewModel : ViewModel(){
             }*/
         }
         catch (e: Exception){
-
+            print(e.message)
         }
     }
 }

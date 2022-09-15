@@ -59,7 +59,7 @@ class PersonasListActivity : AppCompatActivity() {
             })
         }
         catch (e: Exception) {
-
+            print(e.message)
         }
     }
 
