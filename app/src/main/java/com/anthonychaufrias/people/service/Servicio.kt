@@ -6,14 +6,9 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface Servicio {
-    // https://johncodeos.com/how-to-make-post-get-put-and-delete-requests-with-retrofit-using-kotlin/
 
     @GET("listarpersonas")
-    //fun getPersonaList(@Query("idp") idp: Int, @Query("busqueda") busqueda: String): Call<PersonaListResponse>
     fun getPersonaList(@Query("busqueda") busqueda: String): Call<PersonaListResponse>
-    /*fun getPersonaList(
-        @Body filters: PersonaRequest
-    ): Call<PersonaListResponse>*/
 
     @GET("listarpaises")
     fun getPaisesList(): Call<PaisListResponse>
