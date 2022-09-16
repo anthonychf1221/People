@@ -21,10 +21,7 @@ class PersonasListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_lst_personas)
-
-        val title: String = getString(R.string.tlt_lpers)
-        this.supportActionBar!!.setTitle(title)
-        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setToolbar()
 
         viewModel = ViewModelProvider(this).get(PersonaViewModel::class.java)
         initUI()
@@ -44,6 +41,12 @@ class PersonasListActivity : AppCompatActivity() {
             deletePersona(it)
         })
         getPersonas("")
+    }
+
+    private fun setToolbar(){
+        val title: String = getString(R.string.tlt_lpers)
+        this.supportActionBar!!.setTitle(title)
+        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun getPersonas(busqueda: String){
