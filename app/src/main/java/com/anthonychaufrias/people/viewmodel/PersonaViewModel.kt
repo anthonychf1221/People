@@ -24,7 +24,21 @@ class PersonaViewModel : ViewModel(){
     var peopleList  = mutableListOf<Persona>()
     var liveDataPeopleSave = MutableLiveData<Persona>()
 
-    fun addPersona(persona: Persona){
+    fun savePersona(persona: Persona){
+        try{
+            if( persona.idPersona == 0 ){
+                addPersona(persona)
+            }
+            else{
+                updatePersona(persona)
+            }
+        }
+        catch(e: Exception){
+            print(e.message)
+        }
+    }
+
+    private fun addPersona(persona: Persona){
         val call = service.addPersona(persona)
         call.enqueue(object : Callback<PersonaSaveResponse>{
             override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
@@ -58,7 +72,7 @@ class PersonaViewModel : ViewModel(){
         })
     }
 
-    fun updatePersona(persona: Persona){
+    private fun updatePersona(persona: Persona){
         val call = service.updatePersona(persona)
         call.enqueue(object : Callback<PersonaSaveResponse>{
             override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {

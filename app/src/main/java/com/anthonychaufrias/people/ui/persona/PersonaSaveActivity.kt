@@ -28,20 +28,8 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_sav_persona)
 
-        var title:String = ""
-        // https://stackoverflow.com/questions/37949024/kotlin-typecastexception-null-cannot-be-cast-to-non-null-type-com-midsizemango
-        // objPersona = intent.getSerializableExtra(ARG_ITEM) as? Persona
         objPersona = intent.getSerializableExtra(ARG_ITEM) as Persona
-        if( objPersona.idPersona == 0 ){
-            title = getString(R.string.tlt_nper)
-        }
-        else{
-            title = getString(R.string.tlt_eper)
-            txtNombre.setText(objPersona.nombres)
-            txtDocumento.setText(objPersona.documento)
-        }
-        this.supportActionBar!!.setTitle(title)
-        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setToolbar()
 
         viewModelPais = ViewModelProvider(this).get(PaisViewModel::class.java)
         viewModelPers = ViewModelProvider(this).get(PersonaViewModel::class.java)
@@ -49,9 +37,29 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
 
     private fun initUI(){
+        setFields()
         getPaises(objPersona.idPais)
         btnSave.setOnClickListener { view ->
             saveData(view)
+        }
+    }
+
+    private fun setToolbar(){
+        var title:String = ""
+        if( objPersona.idPersona == 0 ){
+            title = getString(R.string.tlt_nper)
+        }
+        else{
+            title = getString(R.string.tlt_eper)
+        }
+        this.supportActionBar!!.setTitle(title)
+        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun setFields(){
+        if( objPersona.idPersona > 0 ){
+            txtNombre.setText(objPersona.nombres)
+            txtDocumento.setText(objPersona.documento)
         }
     }
 
@@ -70,19 +78,11 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             objPersona.documento = documento
             objPersona.idPais = idPais
             objPersona.pais = pais
-            if( objPersona.idPersona == 0 ){
-                viewModelPers.addPersona(objPersona)
-            }
-            else{
-                viewModelPers.updatePersona(objPersona)
-            }
+            viewModelPers.savePersona(objPersona)
 
             viewModelPers.liveDataPeopleSave.observe(this, Observer { persona ->
                 if (persona != null) {
-                    Snackbar.make(
-                        view,
-                        getString(R.string.msgSuccess_Pers),
-                        Snackbar.LENGTH_LONG )
+                    Snackbar.make(view, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG )
                     .setAction("Action", null)
                     .show()
                     finish()
