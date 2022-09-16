@@ -31,6 +31,7 @@ class PersonasListActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
     private fun initUI(){
         rvPersonas.layoutManager = LinearLayoutManager(this)
         rvPersonas.adapter = PersonaListAdapter({
@@ -67,16 +68,21 @@ class PersonasListActivity : AppCompatActivity() {
     }
 
     private fun deletePersona(persona: Persona){
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(getString(R.string.tlt_lpers))
-        builder.setMessage(getString(R.string.msgAreYouSureDel))
+        try{
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(getString(R.string.tlt_lpers))
+            builder.setMessage(getString(R.string.msgAreYouSureDel))
 
-        builder.setPositiveButton(R.string.ansYes) { dialog, which ->
-            viewModel.deletePersona(persona)
+            builder.setPositiveButton(R.string.ansYes) { dialog, which ->
+                viewModel.deletePersona(persona)
+            }
+            builder.setNegativeButton(R.string.ansNo) { dialog, which ->
+            }
+            builder.show()
         }
-        builder.setNegativeButton(R.string.ansNo) { dialog, which ->
+        catch(e: Exception){
+            print(e.message)
         }
-        builder.show()
     }
 
     override fun onSupportNavigateUp(): Boolean {

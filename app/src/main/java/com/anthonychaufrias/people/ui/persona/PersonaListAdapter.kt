@@ -20,7 +20,7 @@ class PersonaListAdapter(val onPersonaClick: (Persona) -> Unit, val onEliminarPe
     }
 
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        var obj = personasList[position]
+        val obj = personasList[position]
         holder.itemView.txtNombre.text = obj.nombres
         holder.itemView.txtPais.text = obj.pais
         holder.itemView.setOnClickListener { onPersonaClick(obj) }

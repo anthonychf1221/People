@@ -70,7 +70,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             val idPais: Int? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.idPais
             val pais: String? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.nombre
 
-            if( !checkForm(nombres, documento) ){
+            if( !isFormValidated(nombres, documento) ){
                 return;
             }
 
@@ -99,13 +99,13 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }
     }
 
-    private fun checkForm(nombre: String, docID: String):Boolean {
+    private fun isFormValidated(nombre: String, docID: String):Boolean {
         var x:Boolean = true
-        if( nombre.equals("") ){
+        if( nombre.isEmpty() ){
             txtNombre.setError(getString(R.string.requiredField))
             x = false
         }
-        if( docID.equals("") ){
+        if( docID.isEmpty() ){
             txtDocumento.setError(getString(R.string.requiredField))
             x = false
         }
