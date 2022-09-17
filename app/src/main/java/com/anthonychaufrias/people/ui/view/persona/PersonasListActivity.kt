@@ -1,4 +1,4 @@
-package com.anthonychaufrias.people.ui.persona
+package com.anthonychaufrias.people.ui.view.persona
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,8 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anthonychaufrias.people.R
-import com.anthonychaufrias.people.model.Persona
-import com.anthonychaufrias.people.viewmodel.PersonaViewModel
+import com.anthonychaufrias.people.data.model.Persona
+import com.anthonychaufrias.people.ui.viewmodel.PersonaViewModel
 import kotlinx.android.synthetic.main.lyt_lst_personas.*
 
 class PersonasListActivity : AppCompatActivity() {

@@ -1,4 +1,4 @@
-package com.anthonychaufrias.people.config
+package com.anthonychaufrias.people.core
 
 class Constantes {
     companion object{

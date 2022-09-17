@@ -1,4 +1,4 @@
-package com.anthonychaufrias.people.ui.persona
+package com.anthonychaufrias.people.ui.view.persona
 
 import android.os.Bundle
 import android.view.Gravity
@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.anthonychaufrias.people.R
-import com.anthonychaufrias.people.config.Constantes
-import com.anthonychaufrias.people.model.Persona
-import com.anthonychaufrias.people.viewmodel.PaisViewModel
-import com.anthonychaufrias.people.viewmodel.PersonaViewModel
+import com.anthonychaufrias.people.core.Constantes
+import com.anthonychaufrias.people.data.model.Persona
+import com.anthonychaufrias.people.ui.viewmodel.PaisViewModel
+import com.anthonychaufrias.people.ui.viewmodel.PersonaViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.lyt_sav_persona.*
 

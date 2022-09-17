@@ -1,11 +1,11 @@
-package com.anthonychaufrias.people.ui.persona
+package com.anthonychaufrias.people.ui.view.persona
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anthonychaufrias.people.R
-import com.anthonychaufrias.people.model.Persona
+import com.anthonychaufrias.people.data.model.Persona
 import kotlinx.android.synthetic.main.row_persona.view.*
 
 class PersonaListAdapter(val onPersonaClick: (Persona) -> Unit, val onEliminarPersonaClick: (Persona) -> Unit): RecyclerView.Adapter<PersonaListAdapter.SearchViewHolder>() {

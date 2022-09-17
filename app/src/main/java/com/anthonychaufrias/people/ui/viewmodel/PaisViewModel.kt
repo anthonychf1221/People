@@ -1,11 +1,11 @@
-package com.anthonychaufrias.people.viewmodel
+package com.anthonychaufrias.people.ui.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.anthonychaufrias.people.config.Constantes
-import com.anthonychaufrias.people.model.Pais
-import com.anthonychaufrias.people.model.PaisListResponse
-import com.anthonychaufrias.people.service.Servicio
+import com.anthonychaufrias.people.core.Constantes
+import com.anthonychaufrias.people.data.model.Pais
+import com.anthonychaufrias.people.data.model.PaisListResponse
+import com.anthonychaufrias.people.data.service.Servicio
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
