@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.model.Pais
 import com.anthonychaufrias.people.data.model.PaisListResponse
-import com.anthonychaufrias.people.data.service.Servicio
+import com.anthonychaufrias.people.data.service.IPersonaService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,7 +17,7 @@ class PaisViewModel : ViewModel(){
         .baseUrl(Constantes.SERVER_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    private val service: Servicio = retrofit.create(Servicio::class.java)
+    private val service: IPersonaService = retrofit.create(IPersonaService::class.java)
 
     val liveDataCountriesList = MutableLiveData<List<Pais>>()
     var countriesList  = mutableListOf<Pais>()
