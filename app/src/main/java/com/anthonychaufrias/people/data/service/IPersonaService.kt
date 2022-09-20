@@ -2,12 +2,13 @@ package com.anthonychaufrias.people.data.service
 
 import com.anthonychaufrias.people.data.model.*
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
 
-interface Servicio {
+interface IPersonaService {
 
     @GET("listarpersonas")
-    fun getPersonaList(@Query("busqueda") busqueda: String): Call<PersonaListResponse>
+    suspend fun getPersonaList(@Query("busqueda") busqueda: String): Response<PersonaListResponse>
 
     @GET("listarpaises")
     fun getPaisesList(): Call<PaisListResponse>
