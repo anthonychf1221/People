@@ -11,80 +11,78 @@ import androidx.lifecycle.ViewModelProvider
 import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.config.Constantes
 import com.anthonychaufrias.people.model.Persona
-import com.anthonychaufrias.people.viewmodel.PaisVM
-import com.anthonychaufrias.people.viewmodel.PersonaVM
+import com.anthonychaufrias.people.viewmodel.PaisViewModel
+import com.anthonychaufrias.people.viewmodel.PersonaViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.lyt_sav_persona.*
 
 class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
-    private lateinit var viewModelPais: PaisVM
-    private lateinit var viewModelPers: PersonaVM
-    private lateinit var objPer: Persona
-    private var selPosPais: Int = 0
+    private lateinit var viewModelPais: PaisViewModel
+    private lateinit var viewModelPers: PersonaViewModel
+    private lateinit var objPersona: Persona
+    private var posicionPais: Int = 0
     companion object {
-        @JvmStatic val ARG_ITEM: String = "objPer"
+        @JvmStatic val ARG_ITEM: String = "objPersona"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_sav_persona)
 
-        var tlt:String = ""
-        // https://stackoverflow.com/questions/37949024/kotlin-typecastexception-null-cannot-be-cast-to-non-null-type-com-midsizemango
-        // objPer = intent.getSerializableExtra(ARG_ITEM) as? Persona
-        objPer = intent.getSerializableExtra(ARG_ITEM) as Persona
-        if( objPer.idp == 0 ){
-            tlt = getString(R.string.tlt_nper)
-        }
-        else{
-            tlt = getString(R.string.tlt_eper)
-            //Log.e("00000000 ", ""+objPer?.nombres)
-            txtNombre.setText(objPer.nombres)
-            txtDocumento.setText(objPer.documento)
-        }
-        this.supportActionBar!!.setTitle(tlt)
-        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        objPersona = intent.getSerializableExtra(ARG_ITEM) as Persona
+        setToolbar()
 
-        viewModelPais = ViewModelProvider(this).get(PaisVM::class.java)
-        viewModelPers = ViewModelProvider(this).get(PersonaVM::class.java)
+        viewModelPais = ViewModelProvider(this).get(PaisViewModel::class.java)
+        viewModelPers = ViewModelProvider(this).get(PersonaViewModel::class.java)
         initUI()
     }
 
     private fun initUI(){
-        getPaises(objPer.idpais)
+        setFields()
+        loadPaises(objPersona.idPais)
         btnSave.setOnClickListener { view ->
             saveData(view)
         }
     }
 
+    private fun setToolbar(){
+        var title:String = ""
+        if( objPersona.idPersona == 0 ){
+            title = getString(R.string.tlt_nper)
+        }
+        else{
+            title = getString(R.string.tlt_eper)
+        }
+        this.supportActionBar!!.setTitle(title)
+        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun setFields(){
+        if( objPersona.idPersona > 0 ){
+            txtNombre.setText(objPersona.nombres)
+            txtDocumento.setText(objPersona.documento)
+        }
+    }
+
     private fun saveData(view: View){
         try{
-            val nombre: String = txtNombre.text.toString().trim()
-            val docID: String = txtDocumento.text.toString().trim()
-            val idPais: Int? = viewModelPais.lstPaises.value?.get(selPosPais)?.idpais
-            val nbPais: String? = viewModelPais.lstPaises.value?.get(selPosPais)?.nombre
+            val nombres: String = txtNombre.text.toString().trim()
+            val documento: String = txtDocumento.text.toString().trim()
+            val idPais: Int? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.idPais
+            val pais: String? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.nombre
 
-            if( !checkForm(nombre, docID) ){
+            if( !isFormValidated(nombres, documento) ){
                 return;
             }
 
-            objPer.nombres = nombre
-            objPer.documento = docID
-            objPer.idpais = idPais
-            objPer.nombpais = nbPais
-            if( objPer.idp == 0 ){
-                //viewModelPers.addPersona(Persona(0, nombre, docID, idPais, nbPais))
-                viewModelPers.addPersona(objPer)
-            }
-            else{
-                viewModelPers.updatePersona(objPer)
-            }
+            objPersona.nombres = nombres
+            objPersona.documento = documento
+            objPersona.idPais = idPais
+            objPersona.pais = pais
+            viewModelPers.savePersona(objPersona)
 
-            viewModelPers.ldSavePersona.observe(this, Observer { persona ->
+            viewModelPers.liveDataPeopleSave.observe(this, Observer { persona ->
                 if (persona != null) {
-                    Snackbar.make(
-                        view,
-                        getString(R.string.msgSuccess_Pers),
-                        Snackbar.LENGTH_LONG )
+                    Snackbar.make(view, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG )
                     .setAction("Action", null)
                     .show()
                     finish()
@@ -97,49 +95,37 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
         }
         catch(e: Exception){
-
+            print(e.message)
         }
     }
 
-    private fun checkForm(nombre: String, docID: String):Boolean {
+    private fun isFormValidated(nombre: String, docID: String):Boolean {
         var x:Boolean = true
-        if( nombre.equals("") ){
+        if( nombre.isEmpty() ){
             txtNombre.setError(getString(R.string.requiredField))
             x = false
         }
-        if( docID.equals("") ){
+        if( docID.isEmpty() ){
             txtDocumento.setError(getString(R.string.requiredField))
             x = false
         }
-        else if(docID.length != Constantes.PERS_DOCID_LEN){
-            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERS_DOCID_LEN.toString()))
+        else if(docID.length != Constantes.PERSON_DOCUMENT_LENGTH){
+            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
             x = false
         }
         return x
     }
 
-    private fun getPaises(selectedId:Int? = 0){
+    private fun loadPaises(selectedId:Int? = 0){
         try{
-            viewModelPais.getPaisesList()
-            viewModelPais.lstPaises.observe(this, Observer { list ->
-                var lstStrPais: MutableList<String> = mutableListOf()
-                var idx:Int = 0
-                var i:Int = 0
-                // https://www.programiz.com/kotlin-programming/for-loop
-                for(pais in list){
-                    lstStrPais.add(pais.nombre)
-                    if( pais.idpais == selectedId ){
-                        idx = i
-                    }
-                    i++
-                }
-                //var languages = arrayOf("Java", "PHP", "Kotlin", "Javascript", "Python", "Swift")
-                var aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, lstStrPais)
-                aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            viewModelPais.loadPaisesList(selectedId)
+            viewModelPais.liveDataCountriesList.observe(this, Observer { list ->
+                val paisesAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, viewModelPais.countryNamesList)
+                paisesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
                 with(spPais){
-                    adapter = aa
-                    setSelection(idx, false)
+                    adapter = paisesAdapter
+                    setSelection(viewModelPais.selectedIndex, false)
                     onItemSelectedListener = this@PersonaSaveActivity
                     prompt = getString(R.string.lblCbPais)
                     gravity = Gravity.CENTER
@@ -147,14 +133,12 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             })
         }
         catch (e: Exception) {
-
+            print(e.message)
         }
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?,
-                                view: View?, position: Int, id: Long) {
-        //Toast.makeText(this, viewModel.lstPaises.value?.get(position)?.nombre, Toast.LENGTH_LONG).show()
-        selPosPais = position
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        posicionPais = position
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {

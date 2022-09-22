@@ -12,47 +12,49 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.model.Persona
-import com.anthonychaufrias.people.viewmodel.PersonaVM
+import com.anthonychaufrias.people.viewmodel.PersonaViewModel
 import kotlinx.android.synthetic.main.lyt_lst_personas.*
 
 class PersonasListActivity : AppCompatActivity() {
-    private lateinit var viewModel: PersonaVM
+    private lateinit var viewModel: PersonaViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_lst_personas)
+        setToolbar()
 
-        val tlt: String = getString(R.string.tlt_lpers)
-        this.supportActionBar!!.setTitle(tlt)
-        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-
-        viewModel = ViewModelProvider(this).get(PersonaVM::class.java)
+        viewModel = ViewModelProvider(this).get(PersonaViewModel::class.java)
         initUI()
-        //test()
         fab.setOnClickListener { view ->
-            //var  objPer: Persona? = null
             val intent = Intent(this, PersonaSaveActivity::class.java)
             intent.putExtra(PersonaSaveActivity.ARG_ITEM, Persona(0, "", "", 0, ""))
             startActivity(intent)
         }
     }
+
     private fun initUI(){
         rvPersonas.layoutManager = LinearLayoutManager(this)
-        rvPersonas.adapter = PersListAdapter({
+        rvPersonas.adapter = PersonaListAdapter({
             val intent = Intent(this, PersonaSaveActivity::class.java)
             intent.putExtra(PersonaSaveActivity.ARG_ITEM, it)
             startActivity(intent)
         },{
             deletePersona(it)
         })
-        getPersonas("")
+        loadPersonas("")
     }
 
-    private fun getPersonas(busqueda: String){
+    private fun setToolbar(){
+        val title: String = getString(R.string.tlt_lpers)
+        this.supportActionBar!!.setTitle(title)
+        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    private fun loadPersonas(busqueda: String){
         try{
-            viewModel.getPersonasList(busqueda)
-            viewModel.ldLstPersonas.observe(this, Observer { list ->
-                (rvPersonas.adapter as PersListAdapter).setData(list)
+            viewModel.loadListaPersonas(busqueda)
+            viewModel.liveDataPeopleList.observe(this, Observer { list ->
+                (rvPersonas.adapter as PersonaListAdapter).setData(list)
                 var vis = View.GONE
                 if( list.size == 0 ){
                     vis = View.VISIBLE
@@ -61,7 +63,7 @@ class PersonasListActivity : AppCompatActivity() {
             })
         }
         catch (e: Exception) {
-
+            print(e.message)
         }
     }
 
@@ -74,12 +76,7 @@ class PersonasListActivity : AppCompatActivity() {
             viewModel.deletePersona(persona)
         }
         builder.setNegativeButton(R.string.ansNo) { dialog, which ->
-
         }
-        /*builder.setNeutralButton("Maybe") { dialog, which ->
-            Toast.makeText(applicationContext,
-                "Maybe", Toast.LENGTH_SHORT).show()
-        }*/
         builder.show()
     }
 
@@ -95,12 +92,12 @@ class PersonasListActivity : AppCompatActivity() {
             val searchView = searchItem.actionView as SearchView
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    getPersonas(query)
+                    loadPersonas(query)
                     return true
                 }
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if( newText!!.isEmpty() ){
-                        getPersonas("")
+                        loadPersonas("")
                     }
                     return true
                 }
@@ -109,14 +106,4 @@ class PersonasListActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    /*private fun test(){
-        rvPersonas.layoutManager = LinearLayoutManager(this)
-        rvPersonas.adapter = PersListAdapter()
-        var lstPersonas : MutableList<Persona>  = mutableListOf()
-        val p1 = Persona(1, "Antyhony", "123123", 1)
-        val p2 = Persona(2, "SSSSS", "444444", 1)
-        lstPersonas.add(p1)
-        lstPersonas.add(p2)
-        (rvPersonas.adapter as PersListAdapter).setData(lstPersonas)
-    }*/
 }
