@@ -24,11 +24,12 @@ class PaisViewModel : ViewModel(){
     var countryNamesList = mutableListOf<String>()
     var selectedIndex: Int = 0
 
-    fun getPaisesList(selectedId:Int? = 0){
+    fun loadPaisesList(selectedId:Int? = 0){
         val call = service.getPaisesList()
         call.enqueue(object : Callback<PaisListResponse> {
             override fun onResponse(call: Call<PaisListResponse>, response: Response<PaisListResponse>) {
                 response.body()?.respuesta?.let { list ->
+                    countriesList.clear()
                     countriesList.addAll(list)
                     //for(pais in list){
                     for (item in countriesList.indices) {

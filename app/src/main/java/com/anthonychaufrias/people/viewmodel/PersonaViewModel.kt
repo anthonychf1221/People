@@ -45,17 +45,6 @@ class PersonaViewModel : ViewModel(){
                 if( response.body()?.status.equals("Ok") ){
                     response.body()?.respuesta?.let { persona ->
                         liveDataPeopleSave.postValue(persona)
-
-                        /*val lst = mutableListOf<Persona>()
-                        //lst.addAll(lstPersonas.value)
-                        lstPersonas.value?.let { lst.addAll(it) }
-                        lst.add(persona)
-                        lstPersonas.value = lst*/
-
-                        //lstPersonas.value?.add(persona)
-                        //lstPersonas.postValue(lstPersonas.value)
-                        //lstPersonas.value = lstPersonas.value // notify observers
-
                         val lista : MutableList<Persona>  = mutableListOf()
                         lista.add(persona)
                         liveDataPeopleList.postValue(lista)
@@ -93,24 +82,28 @@ class PersonaViewModel : ViewModel(){
     }
 
     fun deletePersona(persona: Persona){
-        val call = service.deletePersona(persona)
-        call.enqueue(object : Callback<PersonaSaveResponse>{
-            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                if( response.body()?.status.equals("Ok") ){
-                    response.body()?.respuesta?.let { p ->
-                        removeElement(persona)
-                        //lstPersonas.postValue(lst)
-                        liveDataPeopleList.value = peopleList
+        try{
+            val call = service.deletePersona(persona)
+            call.enqueue(object : Callback<PersonaSaveResponse>{
+                override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
+                    if( response.body()?.status.equals("Ok") ){
+                        response.body()?.respuesta?.let { p ->
+                            removeElement(persona)
+                            liveDataPeopleList.value = peopleList
+                        }
                     }
                 }
-            }
-            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
-                call.cancel()
-            }
-        })
+                override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
+                    call.cancel()
+                }
+            })
+        }
+        catch(e: Exception){
+            print(e.message)
+        }
     }
 
-    fun getListaPersonas(busqueda: String){
+    fun loadListaPersonas(busqueda: String){
         val call = service.getPersonaList(busqueda)
         call.enqueue(object : Callback<PersonaListResponse>{
             override fun onResponse(call: Call<PersonaListResponse>,response: Response<PersonaListResponse>) {
