@@ -2,10 +2,14 @@ package com.anthonychaufrias.people.ui.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.model.Pais
 import com.anthonychaufrias.people.data.model.PaisListResponse
 import com.anthonychaufrias.people.data.service.IPersonaService
+import com.anthonychaufrias.people.domain.GetPaisesUseCase
+import com.anthonychaufrias.people.domain.GetPersonasUseCase
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -13,18 +17,29 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class PaisViewModel : ViewModel(){
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(Constantes.SERVER_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val service: IPersonaService = retrofit.create(IPersonaService::class.java)
-
     val liveDataCountriesList = MutableLiveData<List<Pais>>()
     var countriesList  = mutableListOf<Pais>()
     var countryNamesList = mutableListOf<String>()
     var selectedIndex: Int = 0
 
+    var getPaisesUseCase = GetPaisesUseCase()
+
     fun getPaisesList(selectedId:Int? = 0){
+        viewModelScope.launch {
+            val list: List<Pais> = getPaisesUseCase()
+
+            countriesList.addAll(list)
+            for (item in countriesList.indices) {
+                countryNamesList.add(countriesList[item].nombre)
+                if( countriesList[item].idPais == selectedId ){
+                    selectedIndex = item
+                }
+            }
+            liveDataCountriesList.postValue(list)
+        }
+    }
+
+    /*fun getPaisesList(selectedId:Int? = 0){
         val call = service.getPaisesList()
         call.enqueue(object : Callback<PaisListResponse> {
             override fun onResponse(call: Call<PaisListResponse>, response: Response<PaisListResponse>) {
@@ -44,6 +59,6 @@ class PaisViewModel : ViewModel(){
                 call.cancel()
             }
         })
-    }
+    }*/
 
 }

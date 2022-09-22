@@ -8,7 +8,10 @@ import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.data.model.PersonaListResponse
 import com.anthonychaufrias.people.data.model.PersonaSaveResponse
 import com.anthonychaufrias.people.data.service.IPersonaService
+import com.anthonychaufrias.people.domain.DltPersonasUseCase
 import com.anthonychaufrias.people.domain.GetPersonasUseCase
+import com.anthonychaufrias.people.domain.SetPersonasUseCase
+import com.anthonychaufrias.people.domain.UpdPersonasUseCase
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -22,6 +25,9 @@ class PersonaViewModel : ViewModel(){
     var liveDataPeopleSave = MutableLiveData<Persona>()
 
     var getPersonasUseCase = GetPersonasUseCase()
+    var setPersonasUseCase = SetPersonasUseCase()
+    var updPersonasUseCase = UpdPersonasUseCase()
+    var dltPersonasUseCase = DltPersonasUseCase()
 
 
     fun savePersona(persona: Persona){
@@ -38,52 +44,37 @@ class PersonaViewModel : ViewModel(){
         }
     }
 
-    private fun addPersona(persona: Persona){
-        /*val call = service.addPersona(persona)
-        call.enqueue(object : Callback<PersonaSaveResponse>{
-            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                if( response.body()?.status.equals("Ok") ){
-                    response.body()?.respuesta?.let { persona ->
-                        liveDataPeopleSave.postValue(persona)
-
-                        val lista : MutableList<Persona>  = mutableListOf()
-                        lista.add(persona)
-                        liveDataPeopleList.postValue(lista)
-                    }
-                }
-                else{
-                    liveDataPeopleSave.postValue(null)
-                }
-            }
-            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
-                call.cancel()
-                liveDataPeopleSave.postValue(null)
-            }
-        })*/
+    fun getListaPersonas(busqueda: String){
+        viewModelScope.launch {
+            val list: MutableList<Persona> = getPersonasUseCase(busqueda)
+            peopleList.addAll(list)
+            liveDataPeopleList.postValue(list)
+        }
     }
 
+    private fun addPersona(persona: Persona){
+        viewModelScope.launch {
+            val newPersona: Persona = setPersonasUseCase(persona)
+            liveDataPeopleSave.postValue(newPersona)
+        }
+    }
     private fun updatePersona(persona: Persona){
-        /*val call = service.updatePersona(persona)
-        call.enqueue(object : Callback<PersonaSaveResponse>{
-            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                if( response.body()?.status.equals("Ok") ){
-                    response.body()?.respuesta?.let { persona ->
-                        liveDataPeopleSave.postValue(persona)
-                    }
-                }
-                else{
-                    liveDataPeopleSave.postValue(null)
-                }
-            }
-            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
-                call.cancel()
-                liveDataPeopleSave.postValue(null)
-            }
-        })*/
+        viewModelScope.launch {
+            val updatedPersona: Persona = updPersonasUseCase(persona)
+            liveDataPeopleSave.postValue(updatedPersona)
+        }
     }
 
     fun deletePersona(persona: Persona){
-        /*val call = service.deletePersona(persona)
+        viewModelScope.launch {
+            val deletedPersona: Persona = dltPersonasUseCase(persona)
+            removeElement(persona)
+            liveDataPeopleList.value = peopleList
+        }
+    }
+
+    /*fun deletePersona(persona: Persona){
+        val call = service.deletePersona(persona)
         call.enqueue(object : Callback<PersonaSaveResponse>{
             override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
                 if( response.body()?.status.equals("Ok") ){
@@ -97,16 +88,8 @@ class PersonaViewModel : ViewModel(){
             override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                 call.cancel()
             }
-        })*/
-    }
-
-    fun getListaPersonas(busqueda: String){
-        viewModelScope.launch {
-            val list: MutableList<Persona> = getPersonasUseCase(busqueda)
-            peopleList.addAll(list)
-            liveDataPeopleList.postValue(list)
-        }
-    }
+        })
+    }*/
 
     //@RequiresApi(Build.VERSION_CODES.N)
     fun removeElement(persona: Persona){

@@ -10,9 +10,6 @@ interface IPersonaService {
     @GET("listarpersonas")
     suspend fun getPersonaList(@Query("busqueda") busqueda: String): Response<PersonaListResponse>
 
-    @GET("listarpaises")
-    fun getPaisesList(): Call<PaisListResponse>
-
     @Headers(
         "Content-Type: application/x-www-form-urlencoded"
     )
@@ -29,9 +26,9 @@ interface IPersonaService {
         "Content-Type: application/json"
     )
     @POST("insertarpersona")
-    fun addPersona(
+    suspend fun addPersona(
         @Body persona: Persona
-    ): Call<PersonaSaveResponse>
+    ): Response<PersonaSaveResponse>
 
 
     @Headers(
@@ -39,9 +36,9 @@ interface IPersonaService {
         "Content-Type: application/json"
     )
     @POST("modificarpersona")
-    fun updatePersona(
+    suspend fun updatePersona(
         @Body persona: Persona
-    ): Call<PersonaSaveResponse>
+    ): Response<PersonaSaveResponse>
 
 
     @Headers(
@@ -49,8 +46,8 @@ interface IPersonaService {
         "Content-Type: application/json"
     )
     @POST("eliminarpersona")
-    fun deletePersona(
+    suspend fun deletePersona(
         @Body persona: Persona
-    ): Call<PersonaSaveResponse>
+    ): Response<PersonaSaveResponse>
 
 }
