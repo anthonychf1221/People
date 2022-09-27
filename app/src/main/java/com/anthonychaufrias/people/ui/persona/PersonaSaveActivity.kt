@@ -1,5 +1,7 @@
 package com.anthonychaufrias.people.ui.persona
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -20,15 +22,18 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private lateinit var viewModelPais: PaisViewModel
     private lateinit var viewModelPers: PersonaViewModel
     private lateinit var objPersona: Persona
+    private var action: Int = 0
     private var posicionPais: Int = 0
     companion object {
         @JvmStatic val ARG_ITEM: String = "objPersona"
+        @JvmStatic val ARG_ACTION: String = "action"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_sav_persona)
 
         objPersona = intent.getSerializableExtra(ARG_ITEM) as Persona
+        action = intent.getIntExtra(ARG_ACTION, Constantes.INSERT) as Int
         setToolbar()
 
         viewModelPais = ViewModelProvider(this).get(PaisViewModel::class.java)
@@ -46,7 +51,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
     private fun setToolbar(){
         var title:String = ""
-        if( objPersona.idPersona == 0 ){
+        if( action == Constantes.INSERT ){
             title = getString(R.string.tlt_nper)
         }
         else{
@@ -78,13 +83,19 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             objPersona.documento = documento
             objPersona.idPais = idPais
             objPersona.pais = pais
-            viewModelPers.savePersona(objPersona)
+            viewModelPers.savePersona(objPersona, action)
 
             viewModelPers.liveDataPeopleSave.observe(this, Observer { persona ->
                 if (persona != null) {
                     Snackbar.make(view, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG )
                     .setAction("Action", null)
                     .show()
+
+                    val data = Intent()
+                    data.putExtra(ARG_ITEM, persona)
+                    data.putExtra(ARG_ACTION, action)
+                    setResult(Activity.RESULT_OK, data)
+
                     finish()
                 } else {
                     Snackbar.make(view, getString(R.string.msgFailure), Snackbar.LENGTH_LONG)

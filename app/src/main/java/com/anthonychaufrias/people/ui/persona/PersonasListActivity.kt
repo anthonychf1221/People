@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anthonychaufrias.people.R
+import com.anthonychaufrias.people.config.Constantes
 import com.anthonychaufrias.people.model.Persona
 import com.anthonychaufrias.people.viewmodel.PersonaViewModel
 import kotlinx.android.synthetic.main.lyt_lst_personas.*
@@ -28,7 +29,18 @@ class PersonasListActivity : AppCompatActivity() {
         fab.setOnClickListener { view ->
             val intent = Intent(this, PersonaSaveActivity::class.java)
             intent.putExtra(PersonaSaveActivity.ARG_ITEM, Persona(0, "", "", 0, ""))
-            startActivity(intent)
+            intent.putExtra(PersonaSaveActivity.ARG_ACTION, Constantes.INSERT)
+            startActivityForResult(intent, 1)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK && data != null) {
+            val persona: Persona = data.getSerializableExtra(PersonaSaveActivity.ARG_ITEM) as Persona
+            val action: Int = data.getIntExtra(PersonaSaveActivity.ARG_ACTION, Constantes.INSERT) as Int
+            viewModel.refreshList(persona, action)
         }
     }
 
@@ -37,7 +49,8 @@ class PersonasListActivity : AppCompatActivity() {
         rvPersonas.adapter = PersonaListAdapter({
             val intent = Intent(this, PersonaSaveActivity::class.java)
             intent.putExtra(PersonaSaveActivity.ARG_ITEM, it)
-            startActivity(intent)
+            intent.putExtra(PersonaSaveActivity.ARG_ACTION, Constantes.UPDATE)
+            startActivityForResult(intent, 1)
         },{
             deletePersona(it)
         })

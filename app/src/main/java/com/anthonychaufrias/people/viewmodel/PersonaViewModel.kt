@@ -24,9 +24,9 @@ class PersonaViewModel : ViewModel(){
     var peopleList  = mutableListOf<Persona>()
     var liveDataPeopleSave = MutableLiveData<Persona>()
 
-    fun savePersona(persona: Persona){
+    fun savePersona(persona: Persona, action: Int){
         try{
-            if( persona.idPersona == 0 ){
+            if( action == Constantes.INSERT ){
                 addPersona(persona)
             }
             else{
@@ -88,8 +88,7 @@ class PersonaViewModel : ViewModel(){
                 override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
                     if( response.body()?.status.equals("Ok") ){
                         response.body()?.respuesta?.let { p ->
-                            removeElement(persona)
-                            liveDataPeopleList.value = peopleList
+                            removePersonaFromList(persona)
                         }
                     }
                 }
@@ -118,27 +117,45 @@ class PersonaViewModel : ViewModel(){
         })
     }
 
-    //@RequiresApi(Build.VERSION_CODES.N)
-    fun removeElement(persona: Persona){
-        try{
-            // Esta forma de eliminar es más general
-            // Más información sobre bucles aquí:
-            // https://www.programiz.com/kotlin-programming/for-loop
-            for (item in peopleList.indices) {
-                if( peopleList[item].idPersona == persona.idPersona ){
-                    peopleList.removeAt(item)
-                }
+    fun refreshList(persona: Persona, action: Int){
+        if( action == Constantes.INSERT ){
+            addPersonaToList(persona)
+        }
+        else{
+            updatePersonaFromList(persona)
+        }
+    }
+
+    private fun addPersonaToList(persona: Persona){
+        peopleList.add(persona)
+        liveDataPeopleList.value = peopleList
+    }
+    private fun updatePersonaFromList(persona: Persona){
+        for (item in peopleList.indices) {
+            if( peopleList[item].idPersona == persona.idPersona ){
+                peopleList[item] = persona
             }
-            // Esta porción de código también se puede usar
-            // Pero solo funcionará correctamente si la versión del dispositivo
-            // es mayor a API LEVEL 24 (Android 7.0)
-            /*var filter = Predicate { p: Persona -> p == persona }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                listPersonas.removeIf(filter)
-            }*/
         }
-        catch (e: Exception){
-            print(e.message)
+        liveDataPeopleList.value = peopleList
+    }
+
+    //@RequiresApi(Build.VERSION_CODES.N)
+    private fun removePersonaFromList(persona: Persona){
+        // Esta forma de eliminar es más general
+        // Más información sobre bucles aquí:
+        // https://www.programiz.com/kotlin-programming/for-loop
+        for (item in peopleList.indices) {
+            if( peopleList[item].idPersona == persona.idPersona ){
+                peopleList.removeAt(item)
+            }
         }
+        // Esta porción de código también se puede usar
+        // Pero solo funcionará correctamente si la versión del dispositivo
+        // es mayor a API LEVEL 24 (Android 7.0)
+        /*var filter = Predicate { p: Persona -> p == persona }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            listPersonas.removeIf(filter)
+        }*/
+        liveDataPeopleList.value = peopleList
     }
 }
