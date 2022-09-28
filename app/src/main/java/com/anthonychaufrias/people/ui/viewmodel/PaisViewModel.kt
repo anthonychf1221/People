@@ -3,18 +3,9 @@ package com.anthonychaufrias.people.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.model.Pais
-import com.anthonychaufrias.people.data.model.PaisListResponse
-import com.anthonychaufrias.people.data.service.IPersonaService
 import com.anthonychaufrias.people.domain.GetPaisesUseCase
-import com.anthonychaufrias.people.domain.GetPersonasUseCase
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PaisViewModel : ViewModel(){
     val liveDataCountriesList = MutableLiveData<List<Pais>>()

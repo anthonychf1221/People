@@ -3,21 +3,12 @@ package com.anthonychaufrias.people.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.model.Persona
-import com.anthonychaufrias.people.data.model.PersonaListResponse
-import com.anthonychaufrias.people.data.model.PersonaSaveResponse
-import com.anthonychaufrias.people.data.service.IPersonaService
-import com.anthonychaufrias.people.domain.DltPersonasUseCase
+import com.anthonychaufrias.people.domain.DeletePersonasUseCase
 import com.anthonychaufrias.people.domain.GetPersonasUseCase
 import com.anthonychaufrias.people.domain.SetPersonasUseCase
 import com.anthonychaufrias.people.domain.UpdPersonasUseCase
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PersonaViewModel : ViewModel(){
     var liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
@@ -27,7 +18,7 @@ class PersonaViewModel : ViewModel(){
     var getPersonasUseCase = GetPersonasUseCase()
     var setPersonasUseCase = SetPersonasUseCase()
     var updPersonasUseCase = UpdPersonasUseCase()
-    var dltPersonasUseCase = DltPersonasUseCase()
+    var deletePersonasUseCase = DeletePersonasUseCase()
 
 
     fun savePersona(persona: Persona){
@@ -67,7 +58,7 @@ class PersonaViewModel : ViewModel(){
 
     fun deletePersona(persona: Persona){
         viewModelScope.launch {
-            val deletedPersona: Persona = dltPersonasUseCase(persona)
+            val deletedPersona: Persona = deletePersonasUseCase(persona)
             removeElement(persona)
             liveDataPeopleList.value = peopleList
         }

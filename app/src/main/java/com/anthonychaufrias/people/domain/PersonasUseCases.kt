@@ -9,14 +9,20 @@ class GetPersonasUseCase {
     suspend operator fun invoke(busqueda: String): MutableList<Persona> = repository.getPersonaList(busqueda)
 }
 
-class SetPersonasUseCasee {
+class SetPersonasUseCase {
     private val repository = PersonaRepository()
 
     suspend operator fun invoke(persona: Persona): Persona = repository.setPersona(persona)
 }
 
-class UpdPersonasUseCasee {
+class UpdPersonasUseCase {
     private val repository = PersonaRepository()
 
     suspend operator fun invoke(persona: Persona): Persona = repository.updatePersona(persona)
+}
+
+class DeletePersonasUseCase {
+    private val repository = PersonaRepository()
+
+    suspend operator fun invoke(persona: Persona): Persona = repository.deletePersona(persona)
 }
