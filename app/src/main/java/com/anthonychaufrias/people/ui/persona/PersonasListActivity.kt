@@ -36,7 +36,6 @@ class PersonasListActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (resultCode == RESULT_OK && data != null) {
             val persona: Persona = data.getSerializableExtra(PersonaSaveActivity.ARG_ITEM) as Persona
             val action: Int = data.getIntExtra(PersonaSaveActivity.ARG_ACTION, Constantes.INSERT) as Int
