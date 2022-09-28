@@ -38,7 +38,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
 
     private fun initUI(){
         setFields()
-        getPaises(objPersona.idPais)
+        loadPaises(objPersona.idPais)
         btnSave.setOnClickListener { view ->
             saveData(view)
         }
@@ -116,15 +116,15 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         return x
     }
 
-    private fun getPaises(selectedId:Int? = 0){
+    private fun loadPaises(selectedId:Int? = 0){
         try{
-            viewModelPais.getPaisesList(selectedId)
+            viewModelPais.loadPaisesList(selectedId)
             viewModelPais.liveDataCountriesList.observe(this, Observer { list ->
-                val aadapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, viewModelPais.countryNamesList)
-                aadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                val paisesAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, viewModelPais.countryNamesList)
+                paisesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
                 with(spPais){
-                    adapter = aadapter
+                    adapter = paisesAdapter
                     setSelection(viewModelPais.selectedIndex, false)
                     onItemSelectedListener = this@PersonaSaveActivity
                     prompt = getString(R.string.lblCbPais)

@@ -41,7 +41,7 @@ class PersonasListActivity : AppCompatActivity() {
         },{
             deletePersona(it)
         })
-        getPersonas("")
+        loadPersonas("")
     }
 
     private fun setToolbar(){
@@ -50,9 +50,9 @@ class PersonasListActivity : AppCompatActivity() {
         this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
-    private fun getPersonas(busqueda: String){
+    private fun loadPersonas(busqueda: String){
         try{
-            viewModel.getListaPersonas(busqueda)
+            viewModel.loadListaPersonas(busqueda)
             viewModel.liveDataPeopleList.observe(this, Observer { list ->
                 (rvPersonas.adapter as PersonaListAdapter).setData(list)
                 var vis = View.GONE
@@ -68,21 +68,16 @@ class PersonasListActivity : AppCompatActivity() {
     }
 
     private fun deletePersona(persona: Persona){
-        try{
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle(getString(R.string.tlt_lpers))
-            builder.setMessage(getString(R.string.msgAreYouSureDel))
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.tlt_lpers))
+        builder.setMessage(getString(R.string.msgAreYouSureDel))
 
-            builder.setPositiveButton(R.string.ansYes) { dialog, which ->
-                viewModel.deletePersona(persona)
-            }
-            builder.setNegativeButton(R.string.ansNo) { dialog, which ->
-            }
-            builder.show()
+        builder.setPositiveButton(R.string.ansYes) { dialog, which ->
+            viewModel.deletePersona(persona)
         }
-        catch(e: Exception){
-            print(e.message)
+        builder.setNegativeButton(R.string.ansNo) { dialog, which ->
         }
+        builder.show()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -97,12 +92,12 @@ class PersonasListActivity : AppCompatActivity() {
             val searchView = searchItem.actionView as SearchView
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    getPersonas(query)
+                    loadPersonas(query)
                     return true
                 }
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if( newText!!.isEmpty() ){
-                        getPersonas("")
+                        loadPersonas("")
                     }
                     return true
                 }

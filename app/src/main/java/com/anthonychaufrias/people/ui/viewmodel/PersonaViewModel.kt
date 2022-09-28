@@ -22,12 +22,20 @@ class PersonaViewModel : ViewModel(){
 
 
     fun savePersona(persona: Persona){
+        if( persona.idPersona == 0 ){
+            addPersona(persona)
+        }
+        else{
+            updatePersona(persona)
+        }
+    }
+
+    fun loadListaPersonas(busqueda: String){
         try{
-            if( persona.idPersona == 0 ){
-                addPersona(persona)
-            }
-            else{
-                updatePersona(persona)
+            viewModelScope.launch {
+                val list: MutableList<Persona> = getPersonasUseCase(busqueda)
+                peopleList.addAll(list)
+                liveDataPeopleList.postValue(list)
             }
         }
         catch(e: Exception){
@@ -35,55 +43,44 @@ class PersonaViewModel : ViewModel(){
         }
     }
 
-    fun getListaPersonas(busqueda: String){
-        viewModelScope.launch {
-            val list: MutableList<Persona> = getPersonasUseCase(busqueda)
-            peopleList.addAll(list)
-            liveDataPeopleList.postValue(list)
-        }
-    }
-
     private fun addPersona(persona: Persona){
-        viewModelScope.launch {
-            val newPersona: Persona = setPersonasUseCase(persona)
-            liveDataPeopleSave.postValue(newPersona)
+        try{
+            viewModelScope.launch {
+                val newPersona: Persona = setPersonasUseCase(persona)
+                liveDataPeopleSave.postValue(newPersona)
+            }
+        }
+        catch(e: Exception){
+            print(e.message)
         }
     }
     private fun updatePersona(persona: Persona){
-        viewModelScope.launch {
-            val updatedPersona: Persona = updPersonasUseCase(persona)
-            liveDataPeopleSave.postValue(updatedPersona)
+        try{
+            viewModelScope.launch {
+                val updatedPersona: Persona = updPersonasUseCase(persona)
+                liveDataPeopleSave.postValue(updatedPersona)
+            }
+        }
+        catch(e: Exception){
+            print(e.message)
         }
     }
 
     fun deletePersona(persona: Persona){
-        viewModelScope.launch {
-            val deletedPersona: Persona = deletePersonasUseCase(persona)
-            removeElement(persona)
-            liveDataPeopleList.value = peopleList
+        try{
+            viewModelScope.launch {
+                val deletedPersona: Persona = deletePersonasUseCase(persona)
+                removeElement(persona)
+                liveDataPeopleList.value = peopleList
+            }
+        }
+        catch(e: Exception){
+            print(e.message)
         }
     }
 
-    /*fun deletePersona(persona: Persona){
-        val call = service.deletePersona(persona)
-        call.enqueue(object : Callback<PersonaSaveResponse>{
-            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                if( response.body()?.status.equals("Ok") ){
-                    response.body()?.respuesta?.let { p ->
-                        removeElement(persona)
-                        //lstPersonas.postValue(lst)
-                        liveDataPeopleList.value = peopleList
-                    }
-                }
-            }
-            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
-                call.cancel()
-            }
-        })
-    }*/
-
     //@RequiresApi(Build.VERSION_CODES.N)
-    fun removeElement(persona: Persona){
+    private fun removeElement(persona: Persona){
         try{
             // Esta forma de eliminar es más general
             // Más información sobre bucles aquí:
