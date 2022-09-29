@@ -109,10 +109,15 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             txtDocumento.setError(getString(R.string.requiredField))
             x = false
         }
-        else if(docID.length != Constantes.PERSON_DOCUMENT_LENGTH){
+        val validated = viewModelPers.isDataValidated(docID)
+        if( !validated ){
             txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
             x = false
         }
+        /*else if(docID.length != Constantes.PERSON_DOCUMENT_LENGTH){
+            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
+            x = false
+        }*/
         return x
     }
 

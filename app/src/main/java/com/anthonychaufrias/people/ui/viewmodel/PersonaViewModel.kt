@@ -3,9 +3,10 @@ package com.anthonychaufrias.people.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Persona
-import com.anthonychaufrias.people.domain.DeletePersonasUseCase
-import com.anthonychaufrias.people.domain.GetPersonasUseCase
+//import com.anthonychaufrias.people.domain.DeletePersonasUseCase
+//import com.anthonychaufrias.people.domain.GetPersonasUseCase
 import com.anthonychaufrias.people.domain.SetPersonasUseCase
 import com.anthonychaufrias.people.domain.UpdPersonasUseCase
 import kotlinx.coroutines.launch
@@ -14,12 +15,33 @@ class PersonaViewModel : ViewModel(){
     var liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
     var peopleList  = mutableListOf<Persona>()
     var liveDataPeopleSave = MutableLiveData<Persona>()
+    //var liveDataValidation = MutableLiveData<Boolean>()
 
-    var getPersonasUseCase = GetPersonasUseCase()
+    //var getPersonasUseCase = GetPersonasUseCase()
+    val repository = PersonaRepository()
     var setPersonasUseCase = SetPersonasUseCase()
     var updPersonasUseCase = UpdPersonasUseCase()
-    var deletePersonasUseCase = DeletePersonasUseCase()
+    //var deletePersonasUseCase = DeletePersonasUseCase()
 
+    fun loadListaPersonas(busqueda: String){
+        try{
+            viewModelScope.launch {
+                //val list: MutableList<Persona> = getPersonasUseCase(busqueda)
+                val list: MutableList<Persona> = repository.getPersonaList(busqueda)
+                peopleList.addAll(list)
+                liveDataPeopleList.postValue(list)
+            }
+        }
+        catch(e: Exception){
+            print(e.message)
+        }
+    }
+
+    fun isDataValidated(docID: String):Boolean{
+        val validated = setPersonasUseCase.isDataValidated(docID)
+        //liveDataValidation.postValue(validated)
+        return validated
+    }
 
     fun savePersona(persona: Persona){
         if( persona.idPersona == 0 ){
@@ -27,19 +49,6 @@ class PersonaViewModel : ViewModel(){
         }
         else{
             updatePersona(persona)
-        }
-    }
-
-    fun loadListaPersonas(busqueda: String){
-        try{
-            viewModelScope.launch {
-                val list: MutableList<Persona> = getPersonasUseCase(busqueda)
-                peopleList.addAll(list)
-                liveDataPeopleList.postValue(list)
-            }
-        }
-        catch(e: Exception){
-            print(e.message)
         }
     }
 
@@ -69,7 +78,8 @@ class PersonaViewModel : ViewModel(){
     fun deletePersona(persona: Persona){
         try{
             viewModelScope.launch {
-                val deletedPersona: Persona = deletePersonasUseCase(persona)
+                //val deletedPersona: Persona = deletePersonasUseCase(persona)
+                val deletedPersona: Persona = repository.deletePersona(persona)
                 removeElement(persona)
                 liveDataPeopleList.value = peopleList
             }
