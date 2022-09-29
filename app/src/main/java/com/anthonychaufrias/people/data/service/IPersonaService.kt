@@ -11,17 +11,6 @@ interface IPersonaService {
     suspend fun getPersonaList(@Query("busqueda") busqueda: String): Response<PersonaListResponse>
 
     @Headers(
-        "Content-Type: application/x-www-form-urlencoded"
-    )
-    @FormUrlEncoded
-    @POST("insertarpersona")
-    fun addPersona(
-        @Field("nomb") nomb: String,
-        @Field("doc") doc: String,
-        @Field("idps") idps: Int?
-    ): Call<PersonaListResponse>
-
-    @Headers(
         "Accept: application/json",
         "Content-Type: application/json"
     )

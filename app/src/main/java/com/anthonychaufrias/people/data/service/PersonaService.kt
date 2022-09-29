@@ -1,16 +1,14 @@
 package com.anthonychaufrias.people.data.service
 
-import com.anthonychaufrias.people.core.RetrofitHelper
 import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.data.model.PersonaListResponse
 import com.anthonychaufrias.people.data.model.PersonaSaveResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import javax.inject.Inject
 
-class PersonaService {
-    private val retrofit = RetrofitHelper.getRetrofit()
-    private val service = retrofit.create(IPersonaService::class.java)
+class PersonaService @Inject constructor(private val service: IPersonaService){
 
     suspend fun getPersonaList(busqueda: String): MutableList<Persona> {
         return withContext(Dispatchers.IO){

@@ -9,24 +9,23 @@ import com.anthonychaufrias.people.data.model.Persona
 //import com.anthonychaufrias.people.domain.GetPersonasUseCase
 import com.anthonychaufrias.people.domain.SetPersonasUseCase
 import com.anthonychaufrias.people.domain.UpdPersonasUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PersonaViewModel : ViewModel(){
+@HiltViewModel
+class PersonaViewModel @Inject constructor(
+    private val repository: PersonaRepository,
+    private val setPersonasUseCase: SetPersonasUseCase,
+    private val updPersonasUseCase: UpdPersonasUseCase
+) : ViewModel(){
     var liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
     var peopleList  = mutableListOf<Persona>()
     var liveDataPeopleSave = MutableLiveData<Persona>()
-    //var liveDataValidation = MutableLiveData<Boolean>()
-
-    //var getPersonasUseCase = GetPersonasUseCase()
-    val repository = PersonaRepository()
-    var setPersonasUseCase = SetPersonasUseCase()
-    var updPersonasUseCase = UpdPersonasUseCase()
-    //var deletePersonasUseCase = DeletePersonasUseCase()
 
     fun loadListaPersonas(busqueda: String){
         try{
             viewModelScope.launch {
-                //val list: MutableList<Persona> = getPersonasUseCase(busqueda)
                 val list: MutableList<Persona> = repository.getPersonaList(busqueda)
                 peopleList.addAll(list)
                 liveDataPeopleList.postValue(list)
@@ -39,7 +38,6 @@ class PersonaViewModel : ViewModel(){
 
     fun isDataValidated(docID: String):Boolean{
         val validated = setPersonasUseCase.isDataValidated(docID)
-        //liveDataValidation.postValue(validated)
         return validated
     }
 
@@ -78,7 +76,6 @@ class PersonaViewModel : ViewModel(){
     fun deletePersona(persona: Persona){
         try{
             viewModelScope.launch {
-                //val deletedPersona: Persona = deletePersonasUseCase(persona)
                 val deletedPersona: Persona = repository.deletePersona(persona)
                 removeElement(persona)
                 liveDataPeopleList.value = peopleList

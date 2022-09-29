@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.ui.viewmodel.PersonaViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.lyt_lst_personas.*
 
+@AndroidEntryPoint
 class PersonasListActivity : AppCompatActivity() {
     private lateinit var viewModel: PersonaViewModel
 

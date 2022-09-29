@@ -14,8 +14,10 @@ import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.ui.viewmodel.PaisViewModel
 import com.anthonychaufrias.people.ui.viewmodel.PersonaViewModel
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.lyt_sav_persona.*
 
+@AndroidEntryPoint
 class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private lateinit var viewModelPais: PaisViewModel
     private lateinit var viewModelPers: PersonaViewModel
@@ -114,10 +116,6 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
             x = false
         }
-        /*else if(docID.length != Constantes.PERSON_DOCUMENT_LENGTH){
-            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
-            x = false
-        }*/
         return x
     }
 

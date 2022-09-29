@@ -3,17 +3,23 @@ package com.anthonychaufrias.people.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Pais
 import com.anthonychaufrias.people.domain.GetPaisesUseCase
+import com.anthonychaufrias.people.domain.SetPersonasUseCase
+import com.anthonychaufrias.people.domain.UpdPersonasUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PaisViewModel : ViewModel(){
+@HiltViewModel
+class PaisViewModel @Inject constructor(
+    private val getPaisesUseCase: GetPaisesUseCase
+) : ViewModel(){
     val liveDataCountriesList = MutableLiveData<List<Pais>>()
     var countriesList  = mutableListOf<Pais>()
     var countryNamesList = mutableListOf<String>()
     var selectedIndex: Int = 0
-
-    var getPaisesUseCase = GetPaisesUseCase()
 
     fun loadPaisesList(selectedId:Int? = 0){
         viewModelScope.launch {

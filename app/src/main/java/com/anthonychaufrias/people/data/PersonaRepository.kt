@@ -2,9 +2,9 @@ package com.anthonychaufrias.people.data
 
 import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.data.service.PersonaService
+import javax.inject.Inject
 
-class PersonaRepository {
-    private val api = PersonaService()
+class PersonaRepository @Inject constructor(private val api: PersonaService) {
 
     suspend fun getPersonaList(busqueda: String): MutableList<Persona> {
         val response: MutableList<Persona> = api.getPersonaList(busqueda)
