@@ -18,16 +18,16 @@ class PersonaService {
             response.body()?.respuesta ?: mutableListOf<Persona>()
         }
     }
-    suspend fun setPersona(persona: Persona): Persona {
+    suspend fun setPersona(persona: Persona): Persona? {
         return withContext(Dispatchers.IO){
             val response: Response<PersonaSaveResponse> = service.addPersona(persona)
-            response.body()?.respuesta ?: Persona(-1, "", "", 0, "")
+            response.body()?.respuesta
         }
     }
-    suspend fun updatePersona(persona: Persona): Persona {
+    suspend fun updatePersona(persona: Persona): Persona? {
         return withContext(Dispatchers.IO){
             val response: Response<PersonaSaveResponse> = service.updatePersona(persona)
-            response.body()?.respuesta ?: Persona(-1, "", "", 0, "")
+            response.body()?.respuesta
         }
     }
     suspend fun deletePersona(persona: Persona): Persona {
