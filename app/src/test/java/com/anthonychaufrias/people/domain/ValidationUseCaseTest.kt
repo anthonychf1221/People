@@ -11,7 +11,7 @@ internal class ValidationUseCaseTest{
         val docID: String  = ""
 
         // when
-        val result = ValidatePersonaUseCase.getFormValidation(nombre, docID)
+        //val result = ValidatePersonaUseCase.getFormValidation(nombre, docID)
 
         // then
         //assert(result == ValidationResult.NAME_EMPTY)
@@ -24,7 +24,7 @@ internal class ValidationUseCaseTest{
         val documento: String = ""
 
         // when
-        val result = ValidatePersonaUseCase.getFormValidation(nombre, documento)
+        //val result = ValidatePersonaUseCase.getFormValidation(nombre, documento)
 
         // then
         //assert(result == ValidationResult.DOCUMENT_ID_INVALID)
