@@ -2,27 +2,26 @@ package com.anthonychaufrias.people.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.anthonychaufrias.people.config.Constantes
+import com.anthonychaufrias.people.core.RetrofitHelper
 import com.anthonychaufrias.people.model.Pais
 import com.anthonychaufrias.people.model.PaisListResponse
 import com.anthonychaufrias.people.service.Servicio
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PaisViewModel : ViewModel(){
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(Constantes.SERVER_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private val retrofit = RetrofitHelper.getRetrofit()
     private val service: Servicio = retrofit.create(Servicio::class.java)
 
-    val liveDataCountriesList = MutableLiveData<List<Pais>>()
+    var liveDataCountriesList = MutableLiveData<List<Pais>>()
     var countriesList  = mutableListOf<Pais>()
     var countryNamesList = mutableListOf<String>()
     var selectedIndex: Int = 0
+
+    init {
+        liveDataCountriesList = MutableLiveData<List<Pais>>()
+    }
 
     fun loadPaisesList(selectedId:Int? = 0){
         val call = service.getPaisesList()
@@ -31,7 +30,6 @@ class PaisViewModel : ViewModel(){
                 response.body()?.respuesta?.let { list ->
                     countriesList.clear()
                     countriesList.addAll(list)
-                    //for(pais in list){
                     for (item in countriesList.indices) {
                         countryNamesList.add(countriesList[item].nombre)
                         if( countriesList[item].idPais == selectedId ){

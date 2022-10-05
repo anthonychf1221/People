@@ -2,27 +2,50 @@ package com.anthonychaufrias.people.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.anthonychaufrias.people.config.Constantes
+import com.anthonychaufrias.people.core.Constantes
+import com.anthonychaufrias.people.core.RetrofitHelper
 import com.anthonychaufrias.people.model.Persona
 import com.anthonychaufrias.people.model.PersonaListResponse
 import com.anthonychaufrias.people.model.PersonaSaveResponse
+import com.anthonychaufrias.people.model.PersonaSaveResult
 import com.anthonychaufrias.people.service.Servicio
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PersonaViewModel : ViewModel(){
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(Constantes.SERVER_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private val retrofit = RetrofitHelper.getRetrofit()
     private val service: Servicio = retrofit.create(Servicio::class.java)
 
     var liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
     var peopleList  = mutableListOf<Persona>()
-    var liveDataPeopleSave = MutableLiveData<Persona>()
+    var liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
+
+    init {
+        liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
+        liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
+    }
+
+    enum class ValidationResult{
+        OK, NAME_EMPTY, DOCUMENT_ID_INVALID
+    }
+
+    object ValidatePersonaUseCase {
+
+        fun getFormValidation(nombre: String, docID: String):MutableList<ValidationResult> {
+            val validations = mutableListOf<ValidationResult>()
+            if( nombre.isEmpty() ){
+                validations.add(ValidationResult.NAME_EMPTY)
+            }
+            if( docID.length != Constantes.PERSON_DOCUMENT_LENGTH ){
+                validations.add(ValidationResult.DOCUMENT_ID_INVALID)
+            }
+            if(validations.size == 0){
+                validations.add(ValidationResult.OK)
+            }
+            return validations
+        }
+    }
 
     fun savePersona(persona: Persona, action: Int){
         try{
@@ -39,46 +62,57 @@ class PersonaViewModel : ViewModel(){
     }
 
     private fun addPersona(persona: Persona){
-        val call = service.addPersona(persona)
-        call.enqueue(object : Callback<PersonaSaveResponse>{
-            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                if( response.body()?.status.equals("Ok") ){
-                    response.body()?.respuesta?.let { persona ->
-                        liveDataPeopleSave.postValue(persona)
-                        val lista : MutableList<Persona>  = mutableListOf()
-                        lista.add(persona)
-                        liveDataPeopleList.postValue(lista)
+        val validation = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
+        if( validation[0] == ValidationResult.OK ){
+
+            val call = service.addPersona(persona)
+            call.enqueue(object : Callback<PersonaSaveResponse>{
+                override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
+                    if( response.body()?.status.equals("Ok") ){
+                        response.body()?.respuesta?.let { persona ->
+                            liveDataPeopleSave.postValue(PersonaSaveResult(validation, persona))
+                        }
+                    }
+                    else{
+                        liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
                     }
                 }
-                else{
-                    liveDataPeopleSave.postValue(null)
+                override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
+                    call.cancel()
+                    liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
                 }
-            }
-            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
-                call.cancel()
-                liveDataPeopleSave.postValue(null)
-            }
-        })
+            })
+        }
+        else{
+            liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+        }
     }
 
     private fun updatePersona(persona: Persona){
-        val call = service.updatePersona(persona)
-        call.enqueue(object : Callback<PersonaSaveResponse>{
-            override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
-                if( response.body()?.status.equals("Ok") ){
-                    response.body()?.respuesta?.let { persona ->
-                        liveDataPeopleSave.postValue(persona)
+        val validation = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
+        if( validation[0] == ValidationResult.OK ){
+
+            val call = service.updatePersona(persona)
+            call.enqueue(object : Callback<PersonaSaveResponse>{
+                override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
+                    if( response.body()?.status.equals("Ok") ){
+                        response.body()?.respuesta?.let { persona ->
+                            liveDataPeopleSave.postValue(PersonaSaveResult(validation, persona))
+                        }
+                    }
+                    else{
+                        liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
                     }
                 }
-                else{
-                    liveDataPeopleSave.postValue(null)
+                override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
+                    call.cancel()
+                    liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
                 }
-            }
-            override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
-                call.cancel()
-                liveDataPeopleSave.postValue(null)
-            }
-        })
+            })
+        }
+        else{
+            liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+        }
     }
 
     fun deletePersona(persona: Persona){

@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anthonychaufrias.people.R
-import com.anthonychaufrias.people.config.Constantes
+import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.model.Persona
 import com.anthonychaufrias.people.viewmodel.PersonaViewModel
 import kotlinx.android.synthetic.main.lyt_lst_personas.*
@@ -55,6 +55,10 @@ class PersonasListActivity : AppCompatActivity() {
             deletePersona(it)
         })
         loadPersonas("")
+        viewModel.liveDataPeopleList.observe(this, Observer { list ->
+            (rvPersonas.adapter as PersonaListAdapter).setData(list)
+            setMessageNoRecords(list.size)
+        })
     }
 
     private fun setToolbar(){
@@ -66,18 +70,18 @@ class PersonasListActivity : AppCompatActivity() {
     private fun loadPersonas(busqueda: String){
         try{
             viewModel.loadListaPersonas(busqueda)
-            viewModel.liveDataPeopleList.observe(this, Observer { list ->
-                (rvPersonas.adapter as PersonaListAdapter).setData(list)
-                var vis = View.GONE
-                if( list.size == 0 ){
-                    vis = View.VISIBLE
-                }
-                lblNoRecords.visibility = vis
-            })
         }
         catch (e: Exception) {
             print(e.message)
         }
+    }
+
+    private fun setMessageNoRecords(size: Int){
+        var vis = View.GONE
+        if( size == 0 ){
+            vis = View.VISIBLE
+        }
+        lblNoRecords.visibility = vis
     }
 
     private fun deletePersona(persona: Persona){
