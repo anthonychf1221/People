@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Persona
+import com.anthonychaufrias.people.data.model.PersonaSaveResult
 //import com.anthonychaufrias.people.domain.DeletePersonasUseCase
 //import com.anthonychaufrias.people.domain.GetPersonasUseCase
 import com.anthonychaufrias.people.domain.SetPersonasUseCase
@@ -21,7 +22,7 @@ class PersonaViewModel @Inject constructor(
 ) : ViewModel(){
     var liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
     var peopleList  = mutableListOf<Persona>()
-    var liveDataPeopleSave = MutableLiveData<Persona>()
+    var liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
 
     fun loadListaPersonas(busqueda: String){
         try{
@@ -36,11 +37,6 @@ class PersonaViewModel @Inject constructor(
         }
     }
 
-    fun isDataValidated(docID: String):Boolean{
-        val validated = setPersonasUseCase.isDataValidated(docID)
-        return validated
-    }
-
     fun savePersona(persona: Persona){
         if( persona.idPersona == 0 ){
             addPersona(persona)
@@ -53,8 +49,9 @@ class PersonaViewModel @Inject constructor(
     private fun addPersona(persona: Persona){
         try{
             viewModelScope.launch {
-                val newPersona: Persona = setPersonasUseCase(persona)
-                liveDataPeopleSave.postValue(newPersona)
+                val result: PersonaSaveResult = setPersonasUseCase(persona)
+                //liveDataPeopleSave.postValue(result)
+                liveDataPeopleSave.value = result
             }
         }
         catch(e: Exception){
@@ -64,8 +61,8 @@ class PersonaViewModel @Inject constructor(
     private fun updatePersona(persona: Persona){
         try{
             viewModelScope.launch {
-                val updatedPersona: Persona = updPersonasUseCase(persona)
-                liveDataPeopleSave.postValue(updatedPersona)
+                val result: PersonaSaveResult = updPersonasUseCase(persona)
+                liveDataPeopleSave.value = result
             }
         }
         catch(e: Exception){

@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.model.Persona
+import com.anthonychaufrias.people.data.model.PersonaSaveResult
+import com.anthonychaufrias.people.domain.ValidationResult
 import com.anthonychaufrias.people.ui.viewmodel.PaisViewModel
 import com.anthonychaufrias.people.ui.viewmodel.PersonaViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -42,8 +44,11 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         setFields()
         loadPaises(objPersona.idPais)
         btnSave.setOnClickListener { view ->
-            saveData(view)
+            saveData()
         }
+        viewModelPers.liveDataPeopleSave.observe(this, Observer { result ->
+            showResult(result)
+        })
     }
 
     private fun setToolbar(){
@@ -65,58 +70,45 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }
     }
 
-    private fun saveData(view: View){
+    private fun saveData(){
         try{
             val nombres: String = txtNombre.text.toString().trim()
             val documento: String = txtDocumento.text.toString().trim()
             val idPais: Int? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.idPais
             val pais: String? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.nombre
 
-            if( !isFormValidated(nombres, documento) ){
-                return;
-            }
-
             objPersona.nombres = nombres
             objPersona.documento = documento
             objPersona.idPais = idPais
             objPersona.pais = pais
             viewModelPers.savePersona(objPersona)
-
-            viewModelPers.liveDataPeopleSave.observe(this, Observer { persona ->
-                if (persona != null) {
-                    Snackbar.make(view, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG )
-                    .setAction("Action", null)
-                    .show()
-                    finish()
-                } else {
-                    Snackbar.make(view, getString(R.string.msgFailure), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show()
-                }
-            })
-
         }
         catch(e: Exception){
             print(e.message)
         }
     }
 
-    private fun isFormValidated(nombre: String, docID: String):Boolean {
-        var x:Boolean = true
-        if( nombre.isEmpty() ){
-            txtNombre.setError(getString(R.string.requiredField))
-            x = false
+    private fun showResult(result: PersonaSaveResult) {
+        txtNombre.setError(null)
+        txtDocumento.setError(null)
+        if (result.persona != null) {
+            Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
+            finish()
+        } else {
+            if( result.validation[0] == ValidationResult.OK ){
+                Snackbar.make(btnSave, getString(R.string.msgFailure), Snackbar.LENGTH_LONG).setAction("Action", null).show()
+            }
+            else{
+                for (item in result.validation) {
+                    if(item == ValidationResult.NAME_EMPTY){
+                        txtNombre.setError(getString(R.string.requiredField))
+                    }
+                    if(item == ValidationResult.DOCUMENT_ID_INVALID){
+                        txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
+                    }
+                }
+            }
         }
-        if( docID.isEmpty() ){
-            txtDocumento.setError(getString(R.string.requiredField))
-            x = false
-        }
-        val validated = viewModelPers.isDataValidated(docID)
-        if( !validated ){
-            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
-            x = false
-        }
-        return x
     }
 
     private fun loadPaises(selectedId:Int? = 0){

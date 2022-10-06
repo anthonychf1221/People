@@ -2,6 +2,6 @@ package com.anthonychaufrias.people.core
 
 class Constantes {
     companion object{
-        val PERSON_DOCUMENT_LENGTH: Int = 8
+        const val PERSON_DOCUMENT_LENGTH: Int = 8
     }
 }
