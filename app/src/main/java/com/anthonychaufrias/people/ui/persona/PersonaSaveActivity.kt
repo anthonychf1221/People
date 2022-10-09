@@ -14,6 +14,7 @@ import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.model.Persona
 import com.anthonychaufrias.people.model.PersonaSaveResult
+import com.anthonychaufrias.people.model.ValidationResult
 import com.anthonychaufrias.people.viewmodel.PaisViewModel
 import com.anthonychaufrias.people.viewmodel.PersonaViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -91,34 +92,44 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }
     }
 
+
     private fun showResult(result: PersonaSaveResult) {
         txtNombre.setError(null)
         txtDocumento.setError(null)
-        if (result.persona != null) {
-            Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
-
-            val data = Intent()
-            data.putExtra(ARG_ITEM, result.persona)
-            data.putExtra(ARG_ACTION, action)
-            setResult(Activity.RESULT_OK, data)
-
-            finish()
-        } else {
-            if( result.validation[0] == PersonaViewModel.ValidationResult.OK ){
+        when(result){
+            is PersonaSaveResult.OK -> {
+                finishWithSuccess(result.persona);
+            }
+            is PersonaSaveResult.OperationFailed -> {
                 Snackbar.make(btnSave, getString(R.string.msgFailure), Snackbar.LENGTH_LONG).setAction("Action", null).show()
             }
-            else{
-                for (item in result.validation) {
-                    if(item == PersonaViewModel.ValidationResult.NAME_EMPTY){
-                        txtNombre.setError(getString(R.string.requiredField))
-                    }
-                    if(item == PersonaViewModel.ValidationResult.DOCUMENT_ID_INVALID){
-                        txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
-                    }
-                }
+            is PersonaSaveResult.InvalidInputs -> {
+                showInputErrors(result.errors)
             }
         }
     }
+    private fun finishWithSuccess(persona: Persona){
+        Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
+
+        val data = Intent()
+        data.putExtra(ARG_ITEM, persona)
+        data.putExtra(ARG_ACTION, action)
+        setResult(Activity.RESULT_OK, data)
+
+        finish()
+    }
+    private fun showInputErrors(errors: List<ValidationResult> ){
+        for (item in errors) {
+            if(item == ValidationResult.NAME_EMPTY){
+                txtNombre.setError(getString(R.string.requiredField))
+            }
+            if(item == ValidationResult.DOCUMENT_ID_INVALID){
+                txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
+            }
+        }
+    }
+
+
 
     private fun loadPaises(selectedId:Int? = 0){
         try{

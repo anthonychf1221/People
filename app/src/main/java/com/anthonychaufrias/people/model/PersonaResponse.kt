@@ -1,6 +1,5 @@
 package com.anthonychaufrias.people.model
 
-import com.anthonychaufrias.people.viewmodel.PersonaViewModel
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -14,7 +13,11 @@ data class PersonaSaveResponse(
     @Expose @SerializedName("respuesta") val respuesta: Persona
 )
 
-data class PersonaSaveResult(
-    var validation: MutableList<PersonaViewModel.ValidationResult>,
-    var persona: Persona?
-)
+sealed class PersonaSaveResult {
+    class OK(val persona: Persona): PersonaSaveResult()
+    class InvalidInputs(val errors: List<ValidationResult>): PersonaSaveResult()
+    object OperationFailed : PersonaSaveResult()
+}
+enum class ValidationResult{
+    OK, NAME_EMPTY, DOCUMENT_ID_INVALID
+}

@@ -8,6 +8,7 @@ import com.anthonychaufrias.people.model.Persona
 import com.anthonychaufrias.people.model.PersonaListResponse
 import com.anthonychaufrias.people.model.PersonaSaveResponse
 import com.anthonychaufrias.people.model.PersonaSaveResult
+import com.anthonychaufrias.people.model.ValidationResult
 import com.anthonychaufrias.people.service.Servicio
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,25 +27,18 @@ class PersonaViewModel : ViewModel(){
         liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
     }
 
-    enum class ValidationResult{
-        OK, NAME_EMPTY, DOCUMENT_ID_INVALID
-    }
-
-    object ValidatePersonaUseCase {
-
-        fun getFormValidation(nombre: String, docID: String):MutableList<ValidationResult> {
-            val validations = mutableListOf<ValidationResult>()
-            if( nombre.isEmpty() ){
-                validations.add(ValidationResult.NAME_EMPTY)
-            }
-            if( docID.length != Constantes.PERSON_DOCUMENT_LENGTH ){
-                validations.add(ValidationResult.DOCUMENT_ID_INVALID)
-            }
-            if(validations.size == 0){
-                validations.add(ValidationResult.OK)
-            }
-            return validations
+    private fun getFormValidation(name: String, docID: String):MutableList<ValidationResult> {
+        val validations = mutableListOf<ValidationResult>()
+        if( name.isEmpty() ){
+            validations.add(ValidationResult.NAME_EMPTY)
         }
+        if( docID.length != Constantes.PERSON_DOCUMENT_LENGTH ){
+            validations.add(ValidationResult.DOCUMENT_ID_INVALID)
+        }
+        if( validations.size == 0 ){
+            validations.add(ValidationResult.OK)
+        }
+        return validations
     }
 
     fun savePersona(persona: Persona, action: Int){
@@ -62,56 +56,54 @@ class PersonaViewModel : ViewModel(){
     }
 
     private fun addPersona(persona: Persona){
-        val validation = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
-        if( validation[0] == ValidationResult.OK ){
-
+        val validations = getFormValidation(persona.nombres, persona.documento)
+        if( validations[0] == ValidationResult.OK ){
             val call = service.addPersona(persona)
             call.enqueue(object : Callback<PersonaSaveResponse>{
                 override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
                     if( response.body()?.status.equals("Ok") ){
                         response.body()?.respuesta?.let { persona ->
-                            liveDataPeopleSave.postValue(PersonaSaveResult(validation, persona))
+                            liveDataPeopleSave.postValue(PersonaSaveResult.OK(persona))
                         }
                     }
                     else{
-                        liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+                        liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
                     }
                 }
                 override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                     call.cancel()
-                    liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+                    liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
                 }
             })
         }
         else{
-            liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+            liveDataPeopleSave.postValue(PersonaSaveResult.InvalidInputs(validations))
         }
     }
 
     private fun updatePersona(persona: Persona){
-        val validation = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
-        if( validation[0] == ValidationResult.OK ){
-
+        val validations = getFormValidation(persona.nombres, persona.documento)
+        if( validations[0] == ValidationResult.OK ){
             val call = service.updatePersona(persona)
             call.enqueue(object : Callback<PersonaSaveResponse>{
                 override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
                     if( response.body()?.status.equals("Ok") ){
                         response.body()?.respuesta?.let { persona ->
-                            liveDataPeopleSave.postValue(PersonaSaveResult(validation, persona))
+                            liveDataPeopleSave.postValue(PersonaSaveResult.OK(persona))
                         }
                     }
                     else{
-                        liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+                        liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
                     }
                 }
                 override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                     call.cancel()
-                    liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+                    liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
                 }
             })
         }
         else{
-            liveDataPeopleSave.postValue(PersonaSaveResult(validation, null))
+            liveDataPeopleSave.postValue(PersonaSaveResult.InvalidInputs(validations))
         }
     }
 
