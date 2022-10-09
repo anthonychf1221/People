@@ -27,7 +27,7 @@ class PaisViewModel : ViewModel(){
         val call = service.getPaisesList()
         call.enqueue(object : Callback<PaisListResponse> {
             override fun onResponse(call: Call<PaisListResponse>, response: Response<PaisListResponse>) {
-                response.body()?.respuesta?.let { list ->
+                response.body()?.results?.let { list ->
                     countriesList.clear()
                     countriesList.addAll(list)
                     for (item in countriesList.indices) {

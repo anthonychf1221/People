@@ -7,7 +7,7 @@ object RetrofitHelper {
 
     fun getRetrofit(): Retrofit{
         return Retrofit.Builder()
-            .baseUrl("http://ticsolu.com/mvvm/api/v.1.0/")
+            .baseUrl("http://ticsolu.com/mvvm/api/v.1.1/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

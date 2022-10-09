@@ -92,7 +92,6 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }
     }
 
-
     private fun showResult(result: PersonaSaveResult) {
         txtNombre.setError(null)
         txtDocumento.setError(null)
@@ -101,7 +100,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
                 finishWithSuccess(result.persona);
             }
             is PersonaSaveResult.OperationFailed -> {
-                Snackbar.make(btnSave, getString(R.string.msgFailure), Snackbar.LENGTH_LONG).setAction("Action", null).show()
+                showFailedMessage(result.message, result.type);
             }
             is PersonaSaveResult.InvalidInputs -> {
                 showInputErrors(result.errors)
@@ -119,17 +118,23 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         finish()
     }
     private fun showInputErrors(errors: List<ValidationResult> ){
-        for (item in errors) {
-            if(item == ValidationResult.INVALID_NAME){
+        for (error in errors) {
+            if(error == ValidationResult.INVALID_NAME){
                 txtNombre.setError(getString(R.string.requiredField))
             }
-            if(item == ValidationResult.INVALID_DOCUMENT_ID){
+            if(error == ValidationResult.INVALID_DOCUMENT_ID){
                 txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
             }
         }
     }
-
-
+    private fun showFailedMessage(message: String?, error: ValidationResult){
+        if(error == ValidationResult.INVALID_DOCUMENT_ID){
+            txtDocumento.setError(message)
+        }
+        if(error == ValidationResult.FAILURE){
+            Snackbar.make(btnSave, getString(R.string.msgFailure), Snackbar.LENGTH_LONG).setAction("Action", null).show()
+        }
+    }
 
     private fun loadPaises(selectedId:Int? = 0){
         try{

@@ -62,17 +62,17 @@ class PersonaViewModel : ViewModel(){
             call.enqueue(object : Callback<PersonaSaveResponse>{
                 override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
                     if( response.body()?.status.equals("Ok") ){
-                        response.body()?.respuesta?.let { persona ->
+                        response.body()?.persona?.let { persona ->
                             liveDataPeopleSave.postValue(PersonaSaveResult.OK(persona))
                         }
                     }
                     else{
-                        liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
+                        liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed(response.body()?.message, ValidationResult.INVALID_DOCUMENT_ID))
                     }
                 }
                 override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                     call.cancel()
-                    liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
+                    liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed(t.message, ValidationResult.FAILURE))
                 }
             })
         }
@@ -88,17 +88,17 @@ class PersonaViewModel : ViewModel(){
             call.enqueue(object : Callback<PersonaSaveResponse>{
                 override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
                     if( response.body()?.status.equals("Ok") ){
-                        response.body()?.respuesta?.let { persona ->
+                        response.body()?.persona?.let { persona ->
                             liveDataPeopleSave.postValue(PersonaSaveResult.OK(persona))
                         }
                     }
                     else{
-                        liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
+                        liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed(response.body()?.message, ValidationResult.INVALID_DOCUMENT_ID))
                     }
                 }
                 override fun onFailure(call: Call<PersonaSaveResponse>, t: Throwable) {
                     call.cancel()
-                    liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed)
+                    liveDataPeopleSave.postValue(PersonaSaveResult.OperationFailed(t.message, ValidationResult.FAILURE))
                 }
             })
         }
@@ -113,7 +113,7 @@ class PersonaViewModel : ViewModel(){
             call.enqueue(object : Callback<PersonaSaveResponse>{
                 override fun onResponse(call: Call<PersonaSaveResponse>,response: Response<PersonaSaveResponse>) {
                     if( response.body()?.status.equals("Ok") ){
-                        response.body()?.respuesta?.let { p ->
+                        response.body()?.persona?.let { p ->
                             removePersonaFromList(persona)
                         }
                     }
@@ -132,7 +132,7 @@ class PersonaViewModel : ViewModel(){
         val call = service.getPersonaList(busqueda)
         call.enqueue(object : Callback<PersonaListResponse>{
             override fun onResponse(call: Call<PersonaListResponse>,response: Response<PersonaListResponse>) {
-                response.body()?.respuesta?.let { list ->
+                response.body()?.results?.let { list ->
                     peopleList.addAll(list)
                     liveDataPeopleList.postValue(list)
                 }
