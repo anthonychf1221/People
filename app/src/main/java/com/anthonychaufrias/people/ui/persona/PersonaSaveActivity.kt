@@ -120,10 +120,10 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
     private fun showInputErrors(errors: List<ValidationResult> ){
         for (item in errors) {
-            if(item == ValidationResult.NAME_EMPTY){
+            if(item == ValidationResult.INVALID_NAME){
                 txtNombre.setError(getString(R.string.requiredField))
             }
-            if(item == ValidationResult.DOCUMENT_ID_INVALID){
+            if(item == ValidationResult.INVALID_DOCUMENT_ID){
                 txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
             }
         }

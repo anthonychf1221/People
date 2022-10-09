@@ -30,10 +30,10 @@ class PersonaViewModel : ViewModel(){
     private fun getFormValidation(name: String, docID: String):MutableList<ValidationResult> {
         val validations = mutableListOf<ValidationResult>()
         if( name.isEmpty() ){
-            validations.add(ValidationResult.NAME_EMPTY)
+            validations.add(ValidationResult.INVALID_NAME)
         }
         if( docID.length != Constantes.PERSON_DOCUMENT_LENGTH ){
-            validations.add(ValidationResult.DOCUMENT_ID_INVALID)
+            validations.add(ValidationResult.INVALID_DOCUMENT_ID)
         }
         if( validations.size == 0 ){
             validations.add(ValidationResult.OK)

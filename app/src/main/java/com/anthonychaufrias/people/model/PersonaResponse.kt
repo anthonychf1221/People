@@ -19,5 +19,5 @@ sealed class PersonaSaveResult {
     object OperationFailed : PersonaSaveResult()
 }
 enum class ValidationResult{
-    OK, NAME_EMPTY, DOCUMENT_ID_INVALID
+    OK, INVALID_NAME, INVALID_DOCUMENT_ID
 }
