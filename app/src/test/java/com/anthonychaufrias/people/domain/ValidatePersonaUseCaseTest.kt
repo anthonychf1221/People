@@ -54,7 +54,7 @@ internal class ValidatePersonaUseCaseTest{
         val result = ValidatePersonaUseCase.getFormValidation(name, docID)
 
         // then
-        assert(result[0] == ValidationResult.INVALID_NAME || result[1] == ValidationResult.INVALID_DOCUMENT_ID)
+        assert(result[0] == ValidationResult.INVALID_NAME && result[1] == ValidationResult.INVALID_DOCUMENT_ID)
     }
 
     @Test
@@ -67,7 +67,7 @@ internal class ValidatePersonaUseCaseTest{
         val result = ValidatePersonaUseCase.getFormValidation(name, docID)
 
         // then
-        assert(result[0] == ValidationResult.INVALID_NAME || result[1] == ValidationResult.INVALID_DOCUMENT_ID)
+        assert(result[0] == ValidationResult.INVALID_NAME && result[1] == ValidationResult.INVALID_DOCUMENT_ID)
     }
 
     @Test
