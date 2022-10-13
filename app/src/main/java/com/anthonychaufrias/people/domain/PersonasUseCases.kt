@@ -49,8 +49,8 @@ class UpdPersonasUseCase {
     suspend operator fun invoke(persona: Persona): PersonaSaveResult {
         val validations = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
         if( validations[0] == ValidationResult.OK ){
-            val person = repository.updatePersona(persona)
-            return PersonaSaveResult.OK(persona)
+            val response = repository.updatePersona(persona)
+            return PersonaSaveResult.OK(response?.persona)
         }
         else{
             return PersonaSaveResult.InvalidInputs(validations)

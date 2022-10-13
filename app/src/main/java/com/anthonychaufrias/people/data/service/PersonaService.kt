@@ -27,7 +27,6 @@ class PersonaService {
     suspend fun updatePersona(persona: Persona): PersonaSaveResponse? {
         return withContext(Dispatchers.IO){
             val response: Response<PersonaSaveResponse> = service.updatePersona(persona)
-            //response.body()?.respuesta
             response.body()
         }
     }
@@ -35,7 +34,6 @@ class PersonaService {
         return withContext(Dispatchers.IO){
             val response: Response<PersonaSaveResponse> = service.deletePersona(persona)
             response.body()
-            //response.body()?.respuesta ?: Persona(-1, "", "", 0, "")
         }
     }
 
