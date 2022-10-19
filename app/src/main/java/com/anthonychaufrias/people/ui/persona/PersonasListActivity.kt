@@ -62,9 +62,8 @@ class PersonasListActivity : AppCompatActivity() {
     }
 
     private fun setToolbar(){
-        val title: String = getString(R.string.tlt_lpers)
-        this.supportActionBar!!.setTitle(title)
-        this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        this.supportActionBar?.title = getString(R.string.tlt_lpers)
+        this.supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun loadPersonas(busqueda: String){
@@ -77,11 +76,7 @@ class PersonasListActivity : AppCompatActivity() {
     }
 
     private fun setMessageNoRecords(size: Int){
-        var vis = View.GONE
-        if( size == 0 ){
-            vis = View.VISIBLE
-        }
-        lblNoRecords.visibility = vis
+        lblNoRecords.visibility = if(size == 0) View.VISIBLE else View.GONE
     }
 
     private fun deletePersona(persona: Persona){
@@ -116,6 +111,7 @@ class PersonasListActivity : AppCompatActivity() {
                     if( newText!!.isEmpty() ){
                         loadPersonas("")
                     }
+                    loadPersonas("")
                     return true
                 }
             })

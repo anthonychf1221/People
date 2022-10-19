@@ -27,22 +27,32 @@ class PaisViewModel : ViewModel(){
         val call = service.getPaisesList()
         call.enqueue(object : Callback<PaisListResponse> {
             override fun onResponse(call: Call<PaisListResponse>, response: Response<PaisListResponse>) {
+                if( response.body() == null ){
+                    return
+                }
+                if( !response.body()?.status.equals("Ok") ){
+                    return
+                }
                 response.body()?.results?.let { list ->
-                    countriesList.clear()
-                    countriesList.addAll(list)
-                    for (item in countriesList.indices) {
-                        countryNamesList.add(countriesList[item].nombre)
-                        if( countriesList[item].idPais == selectedId ){
-                            selectedIndex = item
-                        }
-                    }
-                    liveDataCountriesList.postValue(list)
+                    fillListOfCountries(list, selectedId)
                 }
             }
             override fun onFailure(call: Call<PaisListResponse>, t: Throwable) {
                 call.cancel()
             }
         })
+    }
+
+    private fun fillListOfCountries(list: List<Pais>, selectedId:Int? = 0){
+        countriesList.clear()
+        countriesList.addAll(list)
+        for (item in countriesList.indices) {
+            countryNamesList.add(countriesList[item].nombre)
+            if( countriesList[item].idPais == selectedId ){
+                selectedIndex = item
+            }
+        }
+        liveDataCountriesList.postValue(list)
     }
 
 }

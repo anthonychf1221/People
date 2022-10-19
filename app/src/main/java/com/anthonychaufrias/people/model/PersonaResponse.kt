@@ -15,9 +15,9 @@ data class PersonaSaveResponse(
 )
 
 sealed class PersonaSaveResult {
-    class OK(val persona: Persona): PersonaSaveResult()
+    class OK(val persona: Persona?): PersonaSaveResult()
     class InvalidInputs(val errors: List<ValidationResult>): PersonaSaveResult()
-    class OperationFailed(val message: String?, val type: ValidationResult) : PersonaSaveResult()
+    class OperationFailed(val message: String, val type: ValidationResult) : PersonaSaveResult()
 }
 enum class ValidationResult{
     OK, INVALID_NAME, INVALID_DOCUMENT_ID, FAILURE

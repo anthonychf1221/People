@@ -56,40 +56,33 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
 
     private fun setToolbar(){
-        var title:String = ""
-        if( action == Constantes.INSERT ){
-            title = getString(R.string.tlt_nper)
-        }
-        else{
-            title = getString(R.string.tlt_eper)
-        }
+        val title:String = if( action == Constantes.INSERT )
+            getString(R.string.tlt_nper)
+        else
+            getString(R.string.tlt_eper)
+
         this.supportActionBar!!.setTitle(title)
         this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setFields(){
-        if( objPersona.idPersona > 0 ){
+        if( action == Constantes.UPDATE ){
             txtNombre.setText(objPersona.nombres)
             txtDocumento.setText(objPersona.documento)
         }
     }
 
     private fun saveData(){
-        try{
-            val nombres: String = txtNombre.text.toString().trim()
-            val documento: String = txtDocumento.text.toString().trim()
-            val idPais: Int? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.idPais
-            val pais: String? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.nombre
+        val nombres: String = txtNombre.text.toString().trim()
+        val documento: String = txtDocumento.text.toString().trim()
+        val idPais: Int = viewModelPais.countriesList[posicionPais].idPais
+        val pais: String = viewModelPais.countriesList[posicionPais].nombre
 
-            objPersona.nombres = nombres
-            objPersona.documento = documento
-            objPersona.idPais = idPais
-            objPersona.pais = pais
-            viewModelPers.savePersona(objPersona, action)
-        }
-        catch(e: Exception){
-            print(e.message)
-        }
+        objPersona.nombres = nombres
+        objPersona.documento = documento
+        objPersona.idPais = idPais
+        objPersona.pais = pais
+        viewModelPers.savePersona(objPersona, action)
     }
 
     private fun showResult(result: PersonaSaveResult) {
@@ -97,17 +90,17 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         txtDocumento.setError(null)
         when(result){
             is PersonaSaveResult.OK -> {
-                finishWithSuccess(result.persona);
+                finishWithSuccess(result.persona)
             }
             is PersonaSaveResult.OperationFailed -> {
-                showFailedMessage(result.message, result.type);
+                showFailedMessage(result.message, result.type)
             }
             is PersonaSaveResult.InvalidInputs -> {
                 showInputErrors(result.errors)
             }
         }
     }
-    private fun finishWithSuccess(persona: Persona){
+    private fun finishWithSuccess(persona: Persona?){
         Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
 
         val data = Intent()
@@ -127,7 +120,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             }
         }
     }
-    private fun showFailedMessage(message: String?, error: ValidationResult){
+    private fun showFailedMessage(message: String, error: ValidationResult){
         if(error == ValidationResult.INVALID_DOCUMENT_ID){
             txtDocumento.setError(message)
         }
@@ -136,7 +129,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         }
     }
 
-    private fun loadPaises(selectedId:Int? = 0){
+    private fun loadPaises(selectedId:Int = 0){
         try{
             viewModelPais.loadPaisesList(selectedId)
             viewModelPais.liveDataCountriesList.observe(this, Observer { list ->
