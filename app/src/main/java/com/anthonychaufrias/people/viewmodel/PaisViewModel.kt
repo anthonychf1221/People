@@ -19,10 +19,6 @@ class PaisViewModel : ViewModel(){
     var countryNamesList = mutableListOf<String>()
     var selectedIndex: Int = 0
 
-    init {
-        liveDataCountriesList = MutableLiveData<List<Pais>>()
-    }
-
     fun loadPaisesList(selectedId:Int? = 0){
         val call = service.getPaisesList()
         call.enqueue(object : Callback<PaisListResponse> {

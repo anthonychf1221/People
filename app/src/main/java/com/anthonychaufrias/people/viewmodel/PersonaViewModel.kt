@@ -22,11 +22,6 @@ class PersonaViewModel : ViewModel(){
     var peopleList  = mutableListOf<Persona>()
     var liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
 
-    init {
-        liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
-        liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
-    }
-
     private fun getFormValidation(name: String, docID: String):MutableList<ValidationResult> {
         val validations = mutableListOf<ValidationResult>()
         if( name.isEmpty() ){
