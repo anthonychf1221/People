@@ -14,9 +14,9 @@ class PaisViewModel : ViewModel(){
     private val retrofit = RetrofitHelper.getRetrofit()
     private val service: Servicio = retrofit.create(Servicio::class.java)
 
-    var liveDataCountriesList = MutableLiveData<List<Pais>>()
-    var countriesList  = mutableListOf<Pais>()
-    var countryNamesList = mutableListOf<String>()
+    val liveDataCountriesList = MutableLiveData<List<Pais>>()
+    val countriesList  = mutableListOf<Pais>()
+    val countryNamesList = mutableListOf<String>()
     var selectedIndex: Int = 0
 
     fun loadPaisesList(selectedId:Int? = 0){

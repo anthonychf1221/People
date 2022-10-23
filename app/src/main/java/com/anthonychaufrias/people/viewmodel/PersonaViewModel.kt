@@ -18,9 +18,9 @@ class PersonaViewModel : ViewModel(){
     private val retrofit = RetrofitHelper.getRetrofit()
     private val service: Servicio = retrofit.create(Servicio::class.java)
 
-    var liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
-    var peopleList  = mutableListOf<Persona>()
-    var liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
+    val liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
+    val peopleList = mutableListOf<Persona>()
+    val liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
 
     private fun getFormValidation(name: String, docID: String):MutableList<ValidationResult> {
         val validations = mutableListOf<ValidationResult>()
