@@ -38,7 +38,7 @@ internal class PersonaViewModelTest{
     }
 
     @Test
-    fun `check the result when we insert a person`(){
+    fun `validate if everything is OK when we insert a person`(){
         // given
         val personID: Int = 0
         val names: String = "AAA BBB"
@@ -56,7 +56,7 @@ internal class PersonaViewModelTest{
     }
 
     @Test
-    fun `check the result when we update a person`(){
+    fun `validate if everything is OK when we update a person`(){
         // given
         val personID: Int = 41
         val names: String = "Anthony Chau Frias"
