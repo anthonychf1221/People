@@ -4,21 +4,18 @@ import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.data.model.PersonaSaveResult
+import com.anthonychaufrias.people.data.model.ValidationResult
 import javax.inject.Inject
-
-enum class ValidationResult{
-    OK, NAME_EMPTY, DOCUMENT_ID_INVALID
-}
 
 object ValidatePersonaUseCase {
 
     fun getFormValidation(nombre: String, docID: String):MutableList<ValidationResult> {
         val validations = mutableListOf<ValidationResult>()
         if( nombre.isEmpty() ){
-            validations.add(ValidationResult.NAME_EMPTY)
+            validations.add(ValidationResult.INVALID_NAME)
         }
         if( docID.length != Constantes.PERSON_DOCUMENT_LENGTH ){
-            validations.add(ValidationResult.DOCUMENT_ID_INVALID)
+            validations.add(ValidationResult.INVALID_DOCUMENT_ID)
         }
         if(validations.size == 0){
             validations.add(ValidationResult.OK)
@@ -31,13 +28,18 @@ object ValidatePersonaUseCase {
 class SetPersonasUseCase @Inject constructor(private val repository: PersonaRepository) {
 
     suspend operator fun invoke(persona: Persona): PersonaSaveResult {
-        val validation = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
-        if( validation[0] == ValidationResult.OK ){
-            val person = repository.setPersona(persona)
-            return PersonaSaveResult(validation, person)
+        val validations = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
+        if( validations[0] == ValidationResult.OK ){
+            val response = repository.setPersona(persona)
+            if( response?.status.equals("Ok") ){
+                return PersonaSaveResult.OK(response?.persona)
+            }
+            else{
+                return PersonaSaveResult.OperationFailed(response?.message, ValidationResult.INVALID_DOCUMENT_ID)
+            }
         }
         else{
-            return PersonaSaveResult(validation, null)
+            return PersonaSaveResult.InvalidInputs(validations)
         }
     }
 }
@@ -45,13 +47,13 @@ class SetPersonasUseCase @Inject constructor(private val repository: PersonaRepo
 class UpdPersonasUseCase @Inject constructor(private val repository: PersonaRepository){
 
     suspend operator fun invoke(persona: Persona): PersonaSaveResult {
-        val validation = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
-        if( validation[0] == ValidationResult.OK ){
-            val person = repository.updatePersona(persona)
-            return PersonaSaveResult(validation, person)
+        val validations = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
+        if( validations[0] == ValidationResult.OK ){
+            val response = repository.updatePersona(persona)
+            return PersonaSaveResult.OK(response?.persona)
         }
         else{
-            return PersonaSaveResult(validation, null)
+            return PersonaSaveResult.InvalidInputs(validations)
         }
     }
 }

@@ -12,7 +12,7 @@ import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.data.model.PersonaSaveResult
-import com.anthonychaufrias.people.domain.ValidationResult
+import com.anthonychaufrias.people.data.model.ValidationResult
 import com.anthonychaufrias.people.ui.viewmodel.PaisViewModel
 import com.anthonychaufrias.people.ui.viewmodel.PersonaViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -87,29 +87,44 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
             print(e.message)
         }
     }
-
     private fun showResult(result: PersonaSaveResult) {
         txtNombre.setError(null)
         txtDocumento.setError(null)
-        if (result.persona != null) {
-            Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
-            finish()
-        } else {
-            if( result.validation[0] == ValidationResult.OK ){
-                Snackbar.make(btnSave, getString(R.string.msgFailure), Snackbar.LENGTH_LONG).setAction("Action", null).show()
+        when(result){
+            is PersonaSaveResult.OK -> {
+                finishWithSuccess(result.persona);
             }
-            else{
-                for (item in result.validation) {
-                    if(item == ValidationResult.NAME_EMPTY){
-                        txtNombre.setError(getString(R.string.requiredField))
-                    }
-                    if(item == ValidationResult.DOCUMENT_ID_INVALID){
-                        txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
-                    }
-                }
+            is PersonaSaveResult.OperationFailed -> {
+                showFailedMessage(result.message, result.type);
+            }
+            is PersonaSaveResult.InvalidInputs -> {
+                showInputErrors(result.errors)
             }
         }
     }
+    private fun finishWithSuccess(persona: Persona?){
+        Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
+        finish()
+    }
+    private fun showInputErrors(errors: List<ValidationResult> ){
+        for (error in errors) {
+            if(error == ValidationResult.INVALID_NAME){
+                txtNombre.setError(getString(R.string.requiredField))
+            }
+            if(error == ValidationResult.INVALID_DOCUMENT_ID){
+                txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
+            }
+        }
+    }
+    private fun showFailedMessage(message: String?, error: ValidationResult){
+        if(error == ValidationResult.INVALID_DOCUMENT_ID){
+            txtDocumento.setError(message)
+        }
+        if(error == ValidationResult.FAILURE){
+            Snackbar.make(btnSave, getString(R.string.msgFailure), Snackbar.LENGTH_LONG).setAction("Action", null).show()
+        }
+    }
+
 
     private fun loadPaises(selectedId:Int? = 0){
         try{

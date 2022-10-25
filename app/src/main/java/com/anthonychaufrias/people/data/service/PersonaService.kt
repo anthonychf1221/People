@@ -16,22 +16,22 @@ class PersonaService @Inject constructor(private val service: IPersonaService){
             response.body()?.respuesta ?: mutableListOf<Persona>()
         }
     }
-    suspend fun setPersona(persona: Persona): Persona {
+    suspend fun setPersona(persona: Persona): PersonaSaveResponse? {
         return withContext(Dispatchers.IO){
             val response: Response<PersonaSaveResponse> = service.addPersona(persona)
-            response.body()?.respuesta ?: Persona(-1, "", "", 0, "")
+            response.body()
         }
     }
-    suspend fun updatePersona(persona: Persona): Persona {
+    suspend fun updatePersona(persona: Persona): PersonaSaveResponse? {
         return withContext(Dispatchers.IO){
             val response: Response<PersonaSaveResponse> = service.updatePersona(persona)
-            response.body()?.respuesta ?: Persona(-1, "", "", 0, "")
+            response.body()
         }
     }
-    suspend fun deletePersona(persona: Persona): Persona {
+    suspend fun deletePersona(persona: Persona): PersonaSaveResponse? {
         return withContext(Dispatchers.IO){
             val response: Response<PersonaSaveResponse> = service.deletePersona(persona)
-            response.body()?.respuesta ?: Persona(-1, "", "", 0, "")
+            response.body()
         }
     }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Persona
+import com.anthonychaufrias.people.data.model.PersonaSaveResponse
 import com.anthonychaufrias.people.data.model.PersonaSaveResult
 //import com.anthonychaufrias.people.domain.DeletePersonasUseCase
 //import com.anthonychaufrias.people.domain.GetPersonasUseCase
@@ -50,7 +51,6 @@ class PersonaViewModel @Inject constructor(
         try{
             viewModelScope.launch {
                 val result: PersonaSaveResult = setPersonasUseCase(persona)
-                //liveDataPeopleSave.postValue(result)
                 liveDataPeopleSave.value = result
             }
         }
@@ -73,7 +73,7 @@ class PersonaViewModel @Inject constructor(
     fun deletePersona(persona: Persona){
         try{
             viewModelScope.launch {
-                val deletedPersona: Persona = repository.deletePersona(persona)
+                val deletedPersona: PersonaSaveResponse? = repository.deletePersona(persona)
                 removeElement(persona)
                 liveDataPeopleList.value = peopleList
             }

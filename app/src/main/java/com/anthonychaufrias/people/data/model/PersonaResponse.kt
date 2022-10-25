@@ -1,6 +1,5 @@
 package com.anthonychaufrias.people.data.model
 
-import com.anthonychaufrias.people.domain.ValidationResult
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -11,10 +10,15 @@ data class PersonaListResponse(
 
 data class PersonaSaveResponse(
     @Expose @SerializedName("status") val status: String,
-    @Expose @SerializedName("respuesta") val respuesta: Persona
+    @Expose @SerializedName("result") val persona: Persona,
+    @Expose @SerializedName("message") val message: String
 )
 
-data class PersonaSaveResult(
-    var validation: MutableList<ValidationResult>,
-    var persona: Persona?
-)
+sealed class PersonaSaveResult {
+    class OK(val persona: Persona?): PersonaSaveResult()
+    class InvalidInputs(val errors: List<ValidationResult>): PersonaSaveResult()
+    class OperationFailed(val message: String?, val type: ValidationResult) : PersonaSaveResult()
+}
+enum class ValidationResult{
+    OK, INVALID_NAME, INVALID_DOCUMENT_ID, FAILURE
+}
