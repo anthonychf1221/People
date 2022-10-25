@@ -1,5 +1,7 @@
 package com.anthonychaufrias.people.ui.view.persona
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -23,14 +25,17 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private lateinit var viewModelPers: PersonaViewModel
     private lateinit var objPersona: Persona
     private var posicionPais: Int = 0
+    private var action: Int = 0
     companion object {
         @JvmStatic val ARG_ITEM: String = "objPersona"
+        @JvmStatic val ARG_ACTION: String = "action"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_sav_persona)
 
         objPersona = intent.getSerializableExtra(ARG_ITEM) as Persona
+        action = intent.getIntExtra(ARG_ACTION, Constantes.INSERT) as Int
         setToolbar()
 
         viewModelPais = ViewModelProvider(this).get(PaisViewModel::class.java)
@@ -51,19 +56,17 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
 
     private fun setToolbar(){
-        var title:String = ""
-        if( objPersona.idPersona == 0 ){
-            title = getString(R.string.tlt_nper)
-        }
-        else{
-            title = getString(R.string.tlt_eper)
-        }
+        val title:String = if( action == Constantes.INSERT )
+            getString(R.string.tlt_nper)
+        else
+            getString(R.string.tlt_eper)
+
         this.supportActionBar!!.setTitle(title)
         this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setFields(){
-        if( objPersona.idPersona > 0 ){
+        if( action == Constantes.UPDATE ){
             txtNombre.setText(objPersona.nombres)
             txtDocumento.setText(objPersona.documento)
         }
@@ -73,14 +76,14 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         try{
             val nombres: String = txtNombre.text.toString().trim()
             val documento: String = txtDocumento.text.toString().trim()
-            val idPais: Int? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.idPais
-            val pais: String? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.nombre
+            val idPais: Int = viewModelPais.countriesList[posicionPais].idPais
+            val pais: String = viewModelPais.countriesList[posicionPais].nombre
 
             objPersona.nombres = nombres
             objPersona.documento = documento
             objPersona.idPais = idPais
             objPersona.pais = pais
-            viewModelPers.savePersona(objPersona)
+            viewModelPers.savePersona(objPersona, action)
         }
         catch(e: Exception){
             print(e.message)
@@ -104,6 +107,12 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     }
     private fun finishWithSuccess(persona: Persona?){
         Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
+
+        val data = Intent()
+        data.putExtra(ARG_ITEM, persona)
+        data.putExtra(ARG_ACTION, action)
+        setResult(Activity.RESULT_OK, data)
+
         finish()
     }
     private fun showInputErrors(errors: List<ValidationResult> ){

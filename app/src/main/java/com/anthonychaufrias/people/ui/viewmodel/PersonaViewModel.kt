@@ -3,6 +3,7 @@ package com.anthonychaufrias.people.ui.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.data.model.PersonaSaveResponse
@@ -12,17 +13,13 @@ import com.anthonychaufrias.people.domain.UpdPersonasUseCase
 import kotlinx.coroutines.launch
 
 class PersonaViewModel : ViewModel(){
-    var liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
-    var peopleList  = mutableListOf<Persona>()
-    var liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
+    val liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
+    val peopleList  = mutableListOf<Persona>()
+    val liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
 
     private val repository = PersonaRepository()
     private val setPersonasUseCase = SetPersonasUseCase()
     private val updPersonasUseCase = UpdPersonasUseCase()
-
-    init {
-        liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
-    }
 
     fun loadListaPersonas(busqueda: String){
         try{
@@ -37,12 +34,17 @@ class PersonaViewModel : ViewModel(){
         }
     }
 
-    fun savePersona(persona: Persona){
-        if( persona.idPersona == 0 ){
-            addPersona(persona)
+    fun savePersona(persona: Persona, action: Int){
+        try{
+            if( action == Constantes.INSERT ){
+                addPersona(persona)
+            }
+            else{
+                updatePersona(persona)
+            }
         }
-        else{
-            updatePersona(persona)
+        catch(e: Exception){
+            print(e.message)
         }
     }
 
@@ -80,6 +82,27 @@ class PersonaViewModel : ViewModel(){
         catch(e: Exception){
             print(e.message)
         }
+    }
+    fun refreshList(persona: Persona, action: Int){
+        if( action == Constantes.INSERT ){
+            addPersonaToList(persona)
+        }
+        else{
+            updatePersonaFromList(persona)
+        }
+    }
+
+    private fun addPersonaToList(persona: Persona){
+        peopleList.add(persona)
+        liveDataPeopleList.value = peopleList
+    }
+    private fun updatePersonaFromList(persona: Persona){
+        for (item in peopleList.indices) {
+            if( peopleList[item].idPersona == persona.idPersona ){
+                peopleList[item] = persona
+            }
+        }
+        liveDataPeopleList.value = peopleList
     }
 
     //@RequiresApi(Build.VERSION_CODES.N)
