@@ -6,6 +6,8 @@ import com.anthonychaufrias.people.getOrAwaitValue
 import com.anthonychaufrias.people.model.Persona
 import com.anthonychaufrias.people.model.PersonaSaveResult
 import com.anthonychaufrias.people.model.ValidationResult
+import org.junit.Assert.assertTrue
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -33,15 +35,15 @@ internal class PersonaViewModelTest{
 
         // then
         val result = personaViewModel.liveDataPeopleList.getOrAwaitValue()
-        assert(result.size > 0)
-        assert(personaViewModel.peopleList.size > 0)
+        assertTrue(result.size > 0)
+        assertTrue(personaViewModel.peopleList.size > 0)
     }
 
     @Test
     fun `validate if everything is OK when we insert a person`(){
         // given
         val personID: Int = 0
-        val names: String = "AAA BBB"
+        val names: String = "Anthony Chau Frias"
         val documentID: String  = "33991100"
         val countryCode: Int = 1
         val countryName: String = "Perú"
@@ -52,7 +54,7 @@ internal class PersonaViewModelTest{
 
         // then
         val result = personaViewModel.liveDataPeopleSave.getOrAwaitValue()
-        assert(result is PersonaSaveResult.OK)
+        assertTrue(result is PersonaSaveResult.OK)
     }
 
     @Test
@@ -70,7 +72,7 @@ internal class PersonaViewModelTest{
 
         // then
         val result = personaViewModel.liveDataPeopleSave.getOrAwaitValue()
-        assert(result is PersonaSaveResult.OK)
+        assertTrue(result is PersonaSaveResult.OK)
     }
 
     @Test
@@ -88,18 +90,9 @@ internal class PersonaViewModelTest{
 
         // then
         val result = personaViewModel.liveDataPeopleSave.getOrAwaitValue()
-        var errors: List<ValidationResult> = mutableListOf<ValidationResult>()
-        if (result is PersonaSaveResult.InvalidInputs)
-            errors = result.errors
-
-        assert(result is PersonaSaveResult.InvalidInputs)
-        assert(errors[0] == ValidationResult.INVALID_NAME)
-        /*assert(
-            if (result is PersonaSaveResult.InvalidInputs)
-                result.errors[0] == ValidationResult.INVALID_NAME
-            else
-                false
-        )*/
+        val invalidResult = result as PersonaSaveResult.InvalidInputs
+        val errors = invalidResult.errors
+        assertTrue(errors[0] == ValidationResult.INVALID_NAME)
     }
 
     @Test
@@ -117,12 +110,9 @@ internal class PersonaViewModelTest{
 
         // then
         val result = personaViewModel.liveDataPeopleSave.getOrAwaitValue()
-        var errors: List<ValidationResult> = mutableListOf<ValidationResult>()
-        if (result is PersonaSaveResult.InvalidInputs)
-            errors = result.errors
-
-        assert(result is PersonaSaveResult.InvalidInputs)
-        assert(errors[0] == ValidationResult.INVALID_DOCUMENT_ID)
+        val invalidResult = result as PersonaSaveResult.InvalidInputs
+        val errors = invalidResult.errors
+        assertTrue(errors[0] == ValidationResult.INVALID_DOCUMENT_ID)
     }
 
     @Test
@@ -140,12 +130,10 @@ internal class PersonaViewModelTest{
 
         // then
         val result = personaViewModel.liveDataPeopleSave.getOrAwaitValue()
-        var errors: List<ValidationResult> = mutableListOf<ValidationResult>()
-        if (result is PersonaSaveResult.InvalidInputs)
-            errors = result.errors
-
-        assert(result is PersonaSaveResult.InvalidInputs)
-        assert(errors[0] == ValidationResult.INVALID_NAME && errors[1] == ValidationResult.INVALID_DOCUMENT_ID)
+        val invalidResult = result as PersonaSaveResult.InvalidInputs
+        val errors = invalidResult.errors
+        val expectedErrors = listOf(ValidationResult.INVALID_NAME, ValidationResult.INVALID_DOCUMENT_ID)
+        assertEquals(expectedErrors, errors)
     }
 
     @Test
@@ -163,12 +151,10 @@ internal class PersonaViewModelTest{
 
         // then
         val result = personaViewModel.liveDataPeopleSave.getOrAwaitValue()
-        var errors: List<ValidationResult> = mutableListOf<ValidationResult>()
-        if (result is PersonaSaveResult.InvalidInputs)
-            errors = result.errors
-
-        assert(result is PersonaSaveResult.InvalidInputs)
-        assert(errors[0] == ValidationResult.INVALID_NAME && errors[1] == ValidationResult.INVALID_DOCUMENT_ID)
+        val invalidResult = result as PersonaSaveResult.InvalidInputs
+        val errors = invalidResult.errors
+        val expectedErrors = listOf(ValidationResult.INVALID_NAME, ValidationResult.INVALID_DOCUMENT_ID)
+        assertEquals(expectedErrors, errors)
     }
 
 }
