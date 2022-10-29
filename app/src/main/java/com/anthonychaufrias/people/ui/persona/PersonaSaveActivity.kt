@@ -1,5 +1,7 @@
 package com.anthonychaufrias.people.ui.persona
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -9,8 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.anthonychaufrias.people.R
-import com.anthonychaufrias.people.config.Constantes
+import com.anthonychaufrias.people.core.Constantes
 import com.anthonychaufrias.people.model.Persona
+import com.anthonychaufrias.people.model.PersonaSaveResult
+import com.anthonychaufrias.people.model.ValidationResult
 import com.anthonychaufrias.people.viewmodel.PaisViewModel
 import com.anthonychaufrias.people.viewmodel.PersonaViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -20,15 +24,18 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
     private lateinit var viewModelPais: PaisViewModel
     private lateinit var viewModelPers: PersonaViewModel
     private lateinit var objPersona: Persona
+    private var action: Int = 0
     private var posicionPais: Int = 0
     companion object {
         @JvmStatic val ARG_ITEM: String = "objPersona"
+        @JvmStatic val ARG_ACTION: String = "action"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_sav_persona)
 
         objPersona = intent.getSerializableExtra(ARG_ITEM) as Persona
+        action = intent.getIntExtra(ARG_ACTION, Constantes.INSERT) as Int
         setToolbar()
 
         viewModelPais = ViewModelProvider(this).get(PaisViewModel::class.java)
@@ -40,83 +47,89 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         setFields()
         loadPaises(objPersona.idPais)
         btnSave.setOnClickListener { view ->
-            saveData(view)
+            saveData()
         }
+
+        viewModelPers.liveDataPeopleSave.observe(this, Observer { result ->
+            showResult(result)
+        })
     }
 
     private fun setToolbar(){
-        var title:String = ""
-        if( objPersona.idPersona == 0 ){
-            title = getString(R.string.tlt_nper)
-        }
-        else{
-            title = getString(R.string.tlt_eper)
-        }
+        val title:String = if( action == Constantes.INSERT )
+            getString(R.string.tlt_nper)
+        else
+            getString(R.string.tlt_eper)
+
         this.supportActionBar!!.setTitle(title)
         this.supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setFields(){
-        if( objPersona.idPersona > 0 ){
+        if( action == Constantes.UPDATE ){
             txtNombre.setText(objPersona.nombres)
             txtDocumento.setText(objPersona.documento)
         }
     }
 
-    private fun saveData(view: View){
-        try{
-            val nombres: String = txtNombre.text.toString().trim()
-            val documento: String = txtDocumento.text.toString().trim()
-            val idPais: Int? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.idPais
-            val pais: String? = viewModelPais.liveDataCountriesList.value?.get(posicionPais)?.nombre
+    private fun saveData(){
+        val nombres: String = txtNombre.text.toString().trim()
+        val documento: String = txtDocumento.text.toString().trim()
+        val idPais: Int = viewModelPais.countriesList[posicionPais].idPais
+        val pais: String = viewModelPais.countriesList[posicionPais].nombre
 
-            if( !isFormValidated(nombres, documento) ){
-                return;
+        objPersona.nombres = nombres
+        objPersona.documento = documento
+        objPersona.idPais = idPais
+        objPersona.pais = pais
+        viewModelPers.savePersona(objPersona, action)
+    }
+
+    private fun showResult(result: PersonaSaveResult) {
+        txtNombre.setError(null)
+        txtDocumento.setError(null)
+        when(result){
+            is PersonaSaveResult.OK -> {
+                finishWithSuccess(result.persona)
             }
-
-            objPersona.nombres = nombres
-            objPersona.documento = documento
-            objPersona.idPais = idPais
-            objPersona.pais = pais
-            viewModelPers.savePersona(objPersona)
-
-            viewModelPers.liveDataPeopleSave.observe(this, Observer { persona ->
-                if (persona != null) {
-                    Snackbar.make(view, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG )
-                    .setAction("Action", null)
-                    .show()
-                    finish()
-                } else {
-                    Snackbar.make(view, getString(R.string.msgFailure), Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show()
-                }
-            })
-
+            is PersonaSaveResult.OperationFailed -> {
+                showFailedMessage(result.message, result.type)
+            }
+            is PersonaSaveResult.InvalidInputs -> {
+                showInputErrors(result.errors)
+            }
         }
-        catch(e: Exception){
-            print(e.message)
+    }
+    private fun finishWithSuccess(persona: Persona?){
+        Snackbar.make(btnSave, getString(R.string.msgSuccess_Pers), Snackbar.LENGTH_LONG ).setAction("Action", null).show()
+
+        val data = Intent()
+        data.putExtra(ARG_ITEM, persona)
+        data.putExtra(ARG_ACTION, action)
+        setResult(Activity.RESULT_OK, data)
+
+        finish()
+    }
+    private fun showInputErrors(errors: List<ValidationResult> ){
+        for (error in errors) {
+            if(error == ValidationResult.INVALID_NAME){
+                txtNombre.setError(getString(R.string.requiredField))
+            }
+            if(error == ValidationResult.INVALID_DOCUMENT_ID){
+                txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
+            }
+        }
+    }
+    private fun showFailedMessage(message: String, error: ValidationResult){
+        if(error == ValidationResult.INVALID_DOCUMENT_ID){
+            txtDocumento.setError(message)
+        }
+        if(error == ValidationResult.FAILURE){
+            Snackbar.make(btnSave, getString(R.string.msgFailure), Snackbar.LENGTH_LONG).setAction("Action", null).show()
         }
     }
 
-    private fun isFormValidated(nombre: String, docID: String):Boolean {
-        var x:Boolean = true
-        if( nombre.isEmpty() ){
-            txtNombre.setError(getString(R.string.requiredField))
-            x = false
-        }
-        if( docID.isEmpty() ){
-            txtDocumento.setError(getString(R.string.requiredField))
-            x = false
-        }
-        else if(docID.length != Constantes.PERSON_DOCUMENT_LENGTH){
-            txtDocumento.setError(getString(R.string.docIDLen, Constantes.PERSON_DOCUMENT_LENGTH.toString()))
-            x = false
-        }
-        return x
-    }
-
-    private fun loadPaises(selectedId:Int? = 0){
+    private fun loadPaises(selectedId:Int = 0){
         try{
             viewModelPais.loadPaisesList(selectedId)
             viewModelPais.liveDataCountriesList.observe(this, Observer { list ->
