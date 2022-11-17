@@ -7,8 +7,6 @@ import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Persona
 import com.anthonychaufrias.people.data.model.PersonaSaveResponse
 import com.anthonychaufrias.people.data.model.PersonaSaveResult
-//import com.anthonychaufrias.people.domain.DeletePersonasUseCase
-//import com.anthonychaufrias.people.domain.GetPersonasUseCase
 import com.anthonychaufrias.people.domain.SetPersonasUseCase
 import com.anthonychaufrias.people.domain.UpdPersonasUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
