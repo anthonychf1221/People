@@ -8,9 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 
-class PersonaService {
-    private val retrofit = RetrofitHelper.getRetrofit()
-    private val service = retrofit.create(IPersonaService::class.java)
+class PersonaService(private val service: IPersonaService){
+    //private val retrofit = RetrofitHelper.getRetrofit()
+    //private val service = retrofit.create(IPersonaService::class.java)
 
     suspend fun getPersonaList(busqueda: String): MutableList<Persona> {
         return withContext(Dispatchers.IO){

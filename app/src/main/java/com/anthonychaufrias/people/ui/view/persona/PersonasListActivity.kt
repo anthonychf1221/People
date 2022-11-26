@@ -8,23 +8,41 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anthonychaufrias.people.R
 import com.anthonychaufrias.people.core.Constantes
+import com.anthonychaufrias.people.core.RetrofitHelper
+import com.anthonychaufrias.people.data.PersonaRepository
 import com.anthonychaufrias.people.data.model.Persona
+import com.anthonychaufrias.people.data.service.IPersonaService
+import com.anthonychaufrias.people.data.service.PersonaService
 import com.anthonychaufrias.people.ui.viewmodel.PersonaViewModel
 import kotlinx.android.synthetic.main.lyt_lst_personas.*
 
 class PersonasListActivity : AppCompatActivity() {
     private lateinit var viewModel: PersonaViewModel
 
+    private val retrofit = RetrofitHelper.getRetrofit()
+    private val service = retrofit.create(IPersonaService::class.java)
+    private val api = PersonaService(service)
+    private val repository = PersonaRepository(api)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_lst_personas)
         setToolbar()
 
-        viewModel = ViewModelProvider(this).get(PersonaViewModel::class.java)
+        //viewModel = ViewModelProvider(this).get(PersonaViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return PersonaViewModel(repository) as T
+            }
+        })[PersonaViewModel::class.java]
+
         initUI()
         fab.setOnClickListener { view ->
             val intent = Intent(this, PersonaSaveActivity::class.java)

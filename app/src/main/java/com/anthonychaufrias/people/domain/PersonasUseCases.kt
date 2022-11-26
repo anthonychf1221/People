@@ -23,8 +23,8 @@ object ValidatePersonaUseCase {
     }
 }
 
-class SetPersonasUseCase {
-    private val repository = PersonaRepository()
+class SetPersonasUseCase(private val repository: PersonaRepository) {
+    //private val repository = PersonaRepository()
 
     suspend operator fun invoke(persona: Persona): PersonaSaveResult {
         val validations = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)
@@ -43,8 +43,8 @@ class SetPersonasUseCase {
     }
 }
 
-class UpdPersonasUseCase {
-    private val repository = PersonaRepository()
+class UpdPersonasUseCase(private val repository: PersonaRepository) {
+    //private val repository = PersonaRepository()
 
     suspend operator fun invoke(persona: Persona): PersonaSaveResult {
         val validations = ValidatePersonaUseCase.getFormValidation(persona.nombres, persona.documento)

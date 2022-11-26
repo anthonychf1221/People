@@ -12,14 +12,14 @@ import com.anthonychaufrias.people.domain.SetPersonasUseCase
 import com.anthonychaufrias.people.domain.UpdPersonasUseCase
 import kotlinx.coroutines.launch
 
-class PersonaViewModel : ViewModel(){
+class PersonaViewModel(private val repository: PersonaRepository) : ViewModel(){
     val liveDataPeopleList = MutableLiveData<MutableList<Persona>>()
     val peopleList  = mutableListOf<Persona>()
     val liveDataPeopleSave = MutableLiveData<PersonaSaveResult>()
 
-    private val repository = PersonaRepository()
-    private val setPersonasUseCase = SetPersonasUseCase()
-    private val updPersonasUseCase = UpdPersonasUseCase()
+    //private val repository = PersonaRepository()
+    private val setPersonasUseCase = SetPersonasUseCase(repository)
+    private val updPersonasUseCase = UpdPersonasUseCase(repository)
 
     fun loadListaPersonas(busqueda: String){
         try{
