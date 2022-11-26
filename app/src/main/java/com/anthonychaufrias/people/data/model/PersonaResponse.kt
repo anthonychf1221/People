@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class PersonaListResponse(
     @Expose @SerializedName("status") val status: String,
-    @Expose @SerializedName("respuesta") val respuesta: MutableList<Persona>
+    @Expose @SerializedName("results") val respuesta: MutableList<Persona>
 )
 
 data class PersonaSaveResponse(

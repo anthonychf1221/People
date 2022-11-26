@@ -32,7 +32,7 @@ class PersonaSaveActivity : AppCompatActivity(), AdapterView.OnItemSelectedListe
         super.onCreate(savedInstanceState)
         setContentView(R.layout.lyt_sav_persona)
 
-        objPersona = intent.getSerializableExtra(ARG_ITEM) as Persona
+        objPersona = intent.getParcelableExtra<Persona>(ARG_ITEM) as Persona
         setToolbar()
 
         viewModelPais = ViewModelProvider(this).get(PaisViewModel::class.java)
