@@ -56,7 +56,7 @@ class PersonasListActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK && data != null) {
-            val persona: Persona = data.getSerializableExtra(PersonaSaveActivity.ARG_ITEM) as Persona
+            val persona: Persona = data.getParcelableExtra<Persona>(PersonaSaveActivity.ARG_ITEM) as Persona
             val action: Int = data.getIntExtra(PersonaSaveActivity.ARG_ACTION, Constantes.INSERT) as Int
             viewModel.refreshList(persona, action)
         }
